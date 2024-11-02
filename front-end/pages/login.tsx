@@ -11,12 +11,18 @@ const Login: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
         try {
             const data = await loginUser(email, password);
             console.log('Login successful:', data);
-            router.push('/'); // moet ik nog aanpassen naar de juiste pagina
+            if (data.token) {
+                // Bewaar de token indien nodig, bijvoorbeeld in localStorage
+                localStorage.setItem('token', data.token);
+                router.push('/'); // Aanpassen naar de gewenste pagina na inloggen
+            }
         } catch (error: any) {
             console.error('Login failed:', error.message);
+            alert(`Login failed: ${error.message}`);
         }
     };
 

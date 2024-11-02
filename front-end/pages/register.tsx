@@ -3,7 +3,6 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { registerUser } from '../services/authService.ts';
-import { text } from 'stream/consumers';
 
 const Register: React.FC = () => {
     const [email, setEmail] = useState('');
@@ -16,16 +15,21 @@ const Register: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
         if (password !== confirmPassword) {
             alert('Passwords do not match');
             return;
         }
+
         try {
-            const data = await registerUser(email, password, confirmPassword);
-            console.log('Registration successful:', data);
-            router.push('/login');
+            const response = await registerUser(email, password, firstName, lastName, dob);
+            console.log('Registration successful:', response);
+            if (response.success) {
+                router.push('/login');
+            }
         } catch (error: any) {
             console.error('Registration failed:', error.message);
+            alert(`Registration failed: ${error.message}`);
         }
     };
 
@@ -64,7 +68,7 @@ const Register: React.FC = () => {
                             />
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="lastname" className="block text-gray-700">Name</label>
+                            <label htmlFor="lastname" className="block text-gray-700">Last name</label>
                             <input
                                 type="text"
                                 id="lastName"

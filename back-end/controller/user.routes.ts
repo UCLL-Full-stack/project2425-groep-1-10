@@ -129,9 +129,9 @@ userRouter.post('/register', async (req, res) => {
 
     try {
         const newUser = await userService.registerUser(email, password, firstName, lastName, dob);
-        res.status(201).json({ message: 'User registered successfully', user: newUser });
+        res.status(201).json({ success: true, message: 'User registered successfully', user: newUser });
     } catch (error: any) {
-        res.status(400).json({ error: error.message });
+        res.status(400).json({ success: false, error: error.message });
     }
 });
 

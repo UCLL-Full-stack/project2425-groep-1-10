@@ -25,13 +25,16 @@ const Register: React.FC = () => {
             const response = await registerUser(email, password, firstName, lastName, dob);
             console.log('Registration successful:', response);
             if (response.success) {
-                router.push('/login');
+                router.push('/login');  // Redirect to login page on success
             }
         } catch (error: any) {
             console.error('Registration failed:', error.message);
             alert(`Registration failed: ${error.message}`);
         }
     };
+
+
+
 
     return (
         <>
@@ -113,13 +116,13 @@ const Register: React.FC = () => {
                         </div>
                         <button
                             type="submit"
-                            className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+                            className="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600"
                         >
                             Register
                         </button>
                     </form>
                     <p className="mt-4 text-center">
-                        Already have an account? <Link href="/login" className="text-blue-500">Login</Link>
+                        Already have an account? <Link href="/login" className="text-green-500">Login</Link>
                     </p>
                 </div>
             </div>

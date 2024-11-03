@@ -16,9 +16,8 @@ const Login: React.FC = () => {
             const data = await loginUser(email, password);
             console.log('Login successful:', data);
             if (data.token) {
-                // Bewaar de token indien nodig, bijvoorbeeld in localStorage
                 localStorage.setItem('token', data.token);
-                router.push('/'); // Aanpassen naar de gewenste pagina na inloggen
+                router.push('/');
             }
         } catch (error: any) {
             console.error('Login failed:', error.message);
@@ -62,13 +61,13 @@ const Login: React.FC = () => {
                         </div>
                         <button
                             type="submit"
-                            className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+                            className="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600"
                         >
                             Login
                         </button>
                     </form>
                     <p className="mt-4 text-center">
-                        Don't have an account? <Link href="/register" className="text-blue-500">Register</Link>
+                        Don't have an account? <Link href="/register" className="text-green-500">Register</Link>
                     </p>
                 </div>
             </div>

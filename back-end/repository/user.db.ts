@@ -1,114 +1,58 @@
-import { PrismaClient, User } from '@prisma/client';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-
-const prisma = new PrismaClient();
+import { User } from '../model/user';
+import database from '../util/database';
 
 const getAllUsers = async (): Promise<User[]> => {
     try {
-        return await prisma.user.findMany();
-    } catch (error: any) {
-        console.error('Database error:', error);
-        throw new Error('Error retrieving users from the database.');
+        const usersPrisma = await database.user.findMany();
+        return usersPrisma.map((userPrisma) => User.from(userPrisma));
+    } catch (error) {
+        console.error(error);
+        throw new Error('Database error. See server log for details.');
     }
 };
 
 const getUserById = async ({ id }: { id: number }): Promise<User | null> => {
     try {
-        return await prisma.user.findUnique({
+        const userPrisma = await database.user.findUnique({
             where: { id },
         });
-    } catch (error: any) {
-        console.error('Database error:', error);
-        throw new Error('Error retrieving user from the database.');
+
+        return userPrisma ? User.from(userPrisma) : null;
+    } catch (error) {
+        console.error(error);
+        throw new Error('Database error. See server log for details.');
     }
 };
 
-const getUserByEmail = async (email: string): Promise<User | null> => {
+const getUserByEmail = async ({ email }: { email: string }): Promise<User | null> => {
     try {
-        return await prisma.user.findUnique({
+        const userPrisma = await database.user.findFirst({
             where: { email },
         });
-    } catch (error: any) {
-        console.error('Database error:', error);
-        throw new Error('Error retrieving user by email from the database.');
+
+        return userPrisma ? User.from(userPrisma) : null;
+    } catch (error) {
+        console.error(error);
+        throw new Error('Database error. See server log for details.');
     }
 };
 
-const createUser = async (data: {
-    email: string;
-    password: string;
-    firstName: string;
-    lastName: string;
-    dob: Date;
-    role: string;
-}): Promise<User> => {
+const createUser = async (user: User): Promise<User> => {
     try {
-        return await prisma.user.create({
-            data,
+        const userPrisma = await database.user.create({
+            data: {
+                email: user.getEmail(),
+                firstName: user.getFirstName(),
+                lastName: user.getLastName(),
+                dob: user.getDob(),
+                password: user.getPassword(),
+                role: user.getRole(),
+            },
         });
-    } catch (error: any) {
-        console.error('Database error:', error);
-        throw new Error('Error creating user in the database.');
-    }
-};
-
-const registerUser = async (
-    email: string,
-    password: string,
-    firstName: string,
-    lastName: string,
-    dob: Date,
-    role: string
-): Promise<User> => {
-    try {
-        const existingUser = await getUserByEmail(email);
-
-        if (existingUser) {
-            throw new Error('User already exists');
-        }
-
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        const newUser = await createUser({
-            email,
-            password: hashedPassword,
-            firstName,
-            lastName,
-            dob,
-            role,
-        });
-
-        return newUser;
-    } catch (error: any) {
-        throw new Error(`Registration failed: ${error.message}`);
-    }
-};
-
-const loginUser = async (
-    email: string,
-    password: string
-): Promise<{ token: string; user: User }> => {
-    try {
-        const user = await getUserByEmail(email);
-
-        if (!user) {
-            throw new Error('Invalid email or password');
-        }
-
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-
-        if (!isPasswordValid) {
-            throw new Error('Invalid email or password');
-        }
-
-        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, {
-            expiresIn: '1h',
-        });
-
-        return { token, user };
-    } catch (error: any) {
-        throw new Error(`Login failed: ${error.message}`);
+        return User.from(userPrisma);
+    } catch (error) {
+        console.error(error);
+        throw new Error('Failed to create user. See server log for details.');
     }
 };
 
@@ -117,6 +61,4 @@ export default {
     getUserById,
     getUserByEmail,
     createUser,
-    registerUser,
-    loginUser,
 };

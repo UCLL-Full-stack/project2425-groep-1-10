@@ -1,43 +1,98 @@
+/**
+ * @swagger
+ *   components:
+ *     securitySchemes:
+ *       bearerAuth:
+ *         type: http
+ *         scheme: bearer
+ *         bearerFormat: JWT
+ *     schemas:
+ *       AuthenticationResponse:
+ *         type: object
+ *         properties:
+ *           message:
+ *             type: string
+ *             description: Authentication response.
+ *           token:
+ *             type: string
+ *             description: JWT access token.
+ *           fullname:
+ *             type: string
+ *             description: Full name of the user.
+ *           role:
+ *             type: string
+ *             description: Role of the user.
+ *       AuthenticationRequest:
+ *         type: object
+ *         properties:
+ *           email:
+ *             type: string
+ *             description: User email.
+ *           password:
+ *             type: string
+ *             description: User password.
+ *       User:
+ *         type: object
+ *         properties:
+ *           id:
+ *             type: number
+ *             format: int64
+ *           email:
+ *             type: string
+ *             description: E-mail of the user.
+ *           password:
+ *             type: string
+ *             description: User password.
+ *           firstName:
+ *             type: string
+ *             description: First name.
+ *           lastName:
+ *             type: string
+ *             description: Last name.
+ *           dob:
+ *             type: string
+ *             format: date
+ *             description: Date of birth.
+ *       UserInput:
+ *         type: object
+ *         properties:
+ *           email:
+ *             type: string
+ *             description: E-mail of the user.
+ *           password:
+ *             type: string
+ *             description: User password.
+ *           firstName:
+ *             type: string
+ *             description: First name.
+ *           lastName:
+ *             type: string
+ *             description: Last name.
+ *           dob:
+ *             type: string
+ *             format: date
+ *             description: Date of birth.
+ *       Role:
+ *         type: string
+ *         enum:
+ *           - admin
+ *           - company
+ *           - user
+ */
 import express, { NextFunction, Request, Response } from 'express';
 import userService from '../service/user.service';
+import { UserInput } from '../types/index';
+import jwtUtil from '../util/jwt';
 
 const userRouter = express.Router();
 
 /**
  * @swagger
- * components:
- *   schemas:
- *     User:
- *       type: object
- *       properties:
- *         id:
- *           type: integer
- *           description: User ID
- *         email:
- *           type: string
- *           description: User email address
- *         firstName:
- *           type: string
- *           description: User first name
- *         lastName:
- *           type: string
- *           description: User last name
- *         dob:
- *           type: string
- *           format: date
- *           description: User date of birth
- *         role:
- *           type: string
- *           description: User role
- *
- */
-
-/**
- * @swagger
  * /users:
  *   get:
- *     summary: Retrieve a list of all users
- *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     summary: Get a list of all users
  *     responses:
  *       200:
  *         description: A list of users.
@@ -46,92 +101,103 @@ const userRouter = express.Router();
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/User'
+ *                  $ref: '#/components/schemas/User'
  */
-userRouter.get('/', async (req: Request, res: Response, next: NextFunction) => {
-    res.status(200).json(await userService.getAllUsers());
-});
+userRouter.get(
+    '/',
+    jwtUtil.authorizeRoles(['admin']),
+    async (req: Request & { auth: UserInput }, res: Response, next: NextFunction) => {
+        try {
+            const users = await userService.getAllUsers();
+            res.status(200).json(users);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
 
 /**
  * @swagger
- * /users/{id}:
+ * /users/{email}:
  *   get:
- *     summary: Get a user by ID
- *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     summary: Get a user by their email
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: email
  *         required: true
  *         schema:
- *           type: integer
- *         description: ID of the user to retrieve
+ *           type: string
+ *         description: Email of the user to fetch
  *     responses:
  *       200:
- *         description: The user data.
+ *         description: User details
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/User'
  *       404:
- *         description: User not found.
+ *         description: User not found
+ *       500:
+ *         description: Internal server error
  */
-userRouter.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const id = parseInt(req.params.id);
-        res.status(200).json(await userService.getUserById(id));
-    } catch (error: any) {
-        res.status(400).json({ message: error.message });
+userRouter.get(
+    '/:email',
+    jwtUtil.authorizeRoles(['admin']),
+    async (req: Request & { auth: UserInput }, res: Response, next: NextFunction) => {
+        try {
+            const { email } = req.params;
+
+            const user = await userService.getUserByEmail({ email });
+
+            res.status(200).json(user);
+        } catch (error) {
+            res.status(404).json({ error: error.message }); // Set more errors
+        }
     }
-});
+);
 
 /**
  * @swagger
- * /users/register:
+ * /users/signup:
  *   post:
  *     summary: Register a new user
- *     tags: [Users]
+ *     tags:
+ *       - Users
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - email
- *               - password
- *               - firstName
- *               - lastName
- *               - dob
- *             properties:
- *               email:
- *                 type: string
- *               password:
- *                 type: string
- *               firstName:
- *                 type: string
- *               lastName:
- *                 type: string
- *               dob:
- *                 type: string
- *                 format: date
+ *             $ref: '#/components/schemas/UserInput'
  *     responses:
  *       201:
- *         description: User registered successfully
+ *         description: User successfully registered
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/User'
  *       400:
- *         description: Error occurred
+ *         description: Validation error
+ *       500:
+ *         description: Internal server error
  */
-userRouter.post('/register', async (req, res) => {
-    const { email, password, firstName, lastName, dob } = req.body;
-
+userRouter.post('/signup', async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const newUser = await userService.registerUser(email, password, firstName, lastName, dob);
-        res.status(201).json({ success: true, message: 'User registered successfully', user: newUser });
-    } catch (error: any) {
-        res.status(400).json({ success: false, error: error.message });
+        const { email, password, firstName, lastName, dob } = req.body;
+
+        const newUser = await userService.createUser({
+            email,
+            password,
+            firstName,
+            lastName,
+            dob,
+        });
+
+        res.status(201).json(newUser);
+    } catch (error) {
+        next(error);
     }
 });
 
@@ -139,17 +205,15 @@ userRouter.post('/register', async (req, res) => {
  * @swagger
  * /users/login:
  *   post:
- *     summary: User login
- *     tags: [Users]
+ *     summary: Authenticate a user and return a JWT
+ *     tags:
+ *       - Users
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - email
- *               - password
  *             properties:
  *               email:
  *                 type: string
@@ -157,29 +221,28 @@ userRouter.post('/register', async (req, res) => {
  *                 type: string
  *     responses:
  *       200:
- *         description: Login successful, returns a JWT token
+ *         description: Authentication successful
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 message:
- *                   type: string
  *                 token:
  *                   type: string
- *                 user:
- *                   $ref: '#/components/schemas/User'
- *       400:
- *         description: Invalid email or password
+ *                 email:
+ *                   type: string
+ *                 role:
+ *                   type: string
+ *       401:
+ *         description: Invalid credentials
  */
-userRouter.post('/login', async (req, res) => {
-    const { email, password } = req.body;
-
+userRouter.post('/login', async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { token, user } = await userService.loginUser(email, password);
-        res.status(200).json({ message: 'Login successful', token, user });
-    } catch (error: any) {
-        res.status(400).json({ error: error.message });
+        const { email, password } = req.body;
+        const result = await userService.authenticate({ email, password });
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(401).json({ error: error.message });
     }
 });
 

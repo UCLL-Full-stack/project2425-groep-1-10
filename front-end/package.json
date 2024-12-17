@@ -7,7 +7,6 @@
   },
   "dependencies": {
     "@types/react": "18.0.28",
-    "axios": "^1.7.7",
     "bootstrap": "5.2.3",
     "classnames": "^2.3.2",
     "dayjs": "^1.11.7",
@@ -22,7 +21,6 @@
     "use-interval": "^1.4.0"
   },
   "devDependencies": {
-    "@types/axios": "^0.14.4",
     "@types/node": "18.15.0",
     "@types/react-datepicker": "^4.15.0",
     "autoprefixer": "^10.4.16",

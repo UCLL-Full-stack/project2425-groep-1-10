@@ -1,3 +1,6 @@
+import { User as UserPrisma } from '@prisma/client';
+import { Role } from '../types';
+
 export class User {
     private id?: number;
     private email: string;
@@ -5,7 +8,7 @@ export class User {
     private firstName: string;
     private lastName: string;
     private dob: Date;
-    private role: string;
+    private role: Role;
 
     constructor(user: {
         id?: number;
@@ -14,7 +17,7 @@ export class User {
         firstName: string;
         lastName: string;
         dob: Date;
-        role: string;
+        role: Role;
     }) {
         this.validate(user);
 
@@ -51,7 +54,7 @@ export class User {
         return this.dob;
     }
 
-    getRole(): string {
+    getRole(): Role {
         return this.role;
     }
 
@@ -61,26 +64,14 @@ export class User {
         firstName: string;
         lastName: string;
         dob: Date;
-        role: string;
+        role: Role;
     }) {
-        if (!user.email?.trim()) {
-            throw new Error('Email is required');
-        }
-        if (!user.password?.trim()) {
-            throw new Error('Password is required');
-        }
-        if (!user.firstName?.trim()) {
-            throw new Error('First name is required');
-        }
-        if (!user.lastName?.trim()) {
-            throw new Error('Last name is required');
-        }
-        if (!user.dob) {
-            throw new Error('Date of birth is required');
-        }
-        if (!user.role) {
-            throw new Error('Role is required');
-        }
+        if (!user.email?.trim()) throw new Error('Email is required');
+        if (!user.password?.trim()) throw new Error('Password is required');
+        if (!user.firstName?.trim()) throw new Error('First name is required');
+        if (!user.lastName?.trim()) throw new Error('Last name is required');
+        if (!user.dob) throw new Error('Date of birth is required');
+        if (!user.role) throw new Error('Role is required');
     }
 
     equals(user: User): boolean {
@@ -92,5 +83,17 @@ export class User {
             this.dob === user.getDob() &&
             this.role === user.getRole()
         );
+    }
+
+    static from({ id, email, password, firstName, lastName, dob, role }: UserPrisma) {
+        return new User({
+            id,
+            email,
+            password,
+            firstName,
+            lastName,
+            dob,
+            role: role as Role,
+        });
     }
 }

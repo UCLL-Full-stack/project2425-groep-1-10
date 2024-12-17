@@ -14,11 +14,19 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
+  id        Int         @id @default(autoincrement())
+  email     String      @unique
   password  String
   firstName String
   lastName  String
   dob       DateTime
-  role      String   @default("user")
+  role      Role
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+}
+
+enum Role {
+  admin
+  company
+  user
 }

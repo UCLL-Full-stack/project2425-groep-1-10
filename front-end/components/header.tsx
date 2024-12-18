@@ -15,7 +15,10 @@ const Header = () => {
                         priority
                         className="rounded-full shadow-md mb-4"
                     />
-                    <Link href="/" className="text-white text-xl font-semibold">Home</Link>
+                    <div className="flex space-x-8">
+                        <Link href="/" className="text-white text-xl font-semibold">Home</Link>
+                        <Link href="/vacancies" className="text-white text-xl font-semibold">Vacancies</Link>
+                    </div>
                 </div>
                 <ul className="absolute top-5 right-5 list-none flex space-x-8 font-semibold text-xl text-white">
                     <li>

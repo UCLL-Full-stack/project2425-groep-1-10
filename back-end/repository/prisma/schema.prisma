@@ -13,20 +13,77 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Application {
+  id        Int               @id @default(autoincrement())
+  status    ApplicationStatus @default(pending)
+  userId    Int
+  user      User              @relation(fields: [userId], references: [id])
+  jobId     Int
+  job       Job               @relation(fields: [jobId], references: [id])
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+}
+
+model Job {
+  id           Int           @id @default(autoincrement())
+  title        String
+  description  String
+  requirements String[]
+  salaryRange  String?
+  location     String
+  companyId    Int
+  company      Company       @relation(fields: [companyId], references: [id])
+  applications Application[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Company {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  websiteUrl  String?
+  createdBy   Int      @unique
+  creator     User     @relation(fields: [createdBy], references: [id])
+  jobs        Job[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Profile {
+  id        Int      @id @default(autoincrement())
+  bio       String?
+  skills    String[]
+  resumeUrl String?
+  userId    Int      @unique
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model User {
-  id        Int         @id @default(autoincrement())
-  email     String      @unique
-  password  String
-  firstName String
-  lastName  String
-  dob       DateTime
-  role      Role
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  id           Int           @id @default(autoincrement())
+  email        String        @unique
+  password     String
+  firstName    String
+  lastName     String
+  dob          DateTime
+  role         Role          @default(user)
+  profile      Profile?
+  company      Company?
+  applications Application[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 }
 
 enum Role {
   admin
   company
   user
+}
+
+enum ApplicationStatus {
+  pending
+  accepted
+  rejected
 }

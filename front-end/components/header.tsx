@@ -18,7 +18,10 @@ const Header = () => {
                     <div className="flex space-x-8">
                         <Link href="/" className="text-white text-xl font-semibold">Home</Link>
                         <Link href="/vacancies" className="text-white text-xl font-semibold">Vacancies</Link>
+                        <Link href="/progress" className="text-white text-xl font-semibold">Progress</Link>
+                        <Link href="/appliedJobs" className='text-white text-xl font-semibold'>appliedJobs</Link>
                     </div>
+
                 </div>
                 <ul className="absolute top-5 right-5 list-none flex space-x-8 font-semibold text-xl text-white">
                     <li>

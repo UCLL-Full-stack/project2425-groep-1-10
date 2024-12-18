@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 const Header = () => {
     return (
-        <header className="relative p-5 bg-gradient-to-br from-green-600 to-green-400 shadow-lg">
+        <header className="relative p-5 bg-gradient-to-br from-blue-600 to-blue-400 shadow-lg">
             <nav className="flex flex-col items-center">
                 <div className='flex flex-col items-center'>
                     <Image

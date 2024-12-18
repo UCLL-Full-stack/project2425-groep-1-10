@@ -33,9 +33,6 @@ const Register: React.FC = () => {
         }
     };
 
-
-
-
     return (
         <>
             <Head>
@@ -44,9 +41,9 @@ const Register: React.FC = () => {
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
-            <div className="min-h-screen flex items-center justify-center bg-gray-100">
+            <div className="min-h-screen flex items-center justify-center bg-blue-100">
                 <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
-                    <h1 className="text-2xl font-bold mb-6 text-center text-green-400">Register</h1>
+                    <h1 className="text-2xl font-bold mb-6 text-center text-blue-400">Register</h1>
                     <form onSubmit={handleSubmit}>
                         <div className="mb-4">
                             <label htmlFor="email" className="block text-gray-700">Email</label>
@@ -116,13 +113,13 @@ const Register: React.FC = () => {
                         </div>
                         <button
                             type="submit"
-                            className="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600"
+                            className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
                         >
                             Register
                         </button>
                     </form>
                     <p className="mt-4 text-center">
-                        Already have an account? <Link href="/login" className="text-green-500">Login</Link>
+                        Already have an account? <Link href="/login" className="text-blue-500">Login</Link>
                     </p>
                 </div>
             </div>

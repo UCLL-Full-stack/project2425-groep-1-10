@@ -3,7 +3,7 @@ module.exports = {
     return [
       {
         source: '/users/:path*',
-        destination: 'http://localhost:8080/users/:path*',
+        destination: 'http://localhost:3000/users/:path*',
       },
     ];
   },

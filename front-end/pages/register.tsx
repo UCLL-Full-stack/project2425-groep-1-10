@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { registerUser } from '../services/authService.js';
+import { registerUser } from '../services/authService';
 
 const Register: React.FC = () => {
     const [email, setEmail] = useState('');

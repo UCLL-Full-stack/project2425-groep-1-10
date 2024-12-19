@@ -71,5 +71,9 @@
         "failed": "Échec de l'inscription",
         "alreadyHaveAccount": "Vous avez déjà un compte?",
         "loginLink": "Connexion"
+    },
+    "logout": "Déconnexion",
+    "header": {
+        "login": "Se connecter"
     }
 }

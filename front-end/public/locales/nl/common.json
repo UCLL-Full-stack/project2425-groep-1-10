@@ -71,5 +71,9 @@
         "failed": "Registratie mislukt",
         "alreadyHaveAccount": "Heb je al een account?",
         "loginLink": "Inloggen"
+    },
+    "logout": "Uitloggen",
+    "header": {
+        "login": "Inloggen"
     }
 }

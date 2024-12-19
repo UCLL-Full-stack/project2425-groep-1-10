@@ -1,11 +1,23 @@
 import React from "react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Language from "@components/language/language";
 import { useTranslation } from "next-i18next";
 
 const Header: React.FC = () => {
     const { t } = useTranslation("common");
+    const [loggedInUser, setLoggedInUser] = useState<any>(null);
+
+    useEffect(() => {
+        const user = localStorage.getItem("loggedInUser");
+        setLoggedInUser(user ? JSON.parse(user) : null);
+    }, []);
+
+    const handleClick = () => {
+        localStorage.removeItem("loggedInUser");
+        setLoggedInUser(null);
+    };
 
     return (
         <header className="relative p-5 bg-gradient-to-br from-blue-600 to-blue-400 shadow-lg">
@@ -34,14 +46,26 @@ const Header: React.FC = () => {
                         </Link>
                     </div>
                 </div>
-                <ul className="absolute top-5 right-5 list-none flex space-x-8 font-semibold text-xl text-white">
-                    <li>
-                        <Link href="/login">{t("login")}</Link>
-                    </li>
-                    <li>
-                        <Link href="/register">{t("register")}</Link>
-                    </li>
-                </ul>
+                <div className="absolute top-5 right-5 list-none flex space-x-8 font-semibold text-xl text-white">
+                    {!loggedInUser ? (
+                        <Link href="/login" className="px-4 text-xl text-white hover:bg-gray-600 rounded-lg">
+                            {t("header.login")}
+                        </Link>
+                    ) : (
+                        <>
+                            <a
+                                href="/login"
+                                onClick={handleClick}
+                                className="px-4 text-xl text-white hover:bg-gray-600 rounded-lg"
+                            >
+                                {t("header.logout")}
+                            </a>
+                            <div className="text-white ms-5 mt-2 md:mt-0 pt-1 md:pt-0 grow">
+                                {t("header.welcome")}, {loggedInUser.firstName}!
+                            </div>
+                        </>
+                    )}
+                </div>
                 <div className="absolute top-5 left-5">
                     <Language />
                 </div>

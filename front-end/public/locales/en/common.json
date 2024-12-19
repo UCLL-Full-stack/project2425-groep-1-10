@@ -71,5 +71,9 @@
         "failed": "Registration failed",
         "alreadyHaveAccount": "Already have an account?",
         "loginLink": "Login"
+    },
+    "logout": "Logout",
+    "header": {
+        "login": "Login"
     }
 }

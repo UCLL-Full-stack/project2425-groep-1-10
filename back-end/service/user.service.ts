@@ -21,10 +21,12 @@ const validateUserInput = ({
     email,
     password,
     dob,
+    role,
 }: {
     email: string;
     password: string;
     dob: string;
+    role: Role;
 }): { parsedDob: Date } => {
     // Validate email
     if (!email || !emailRegex.test(email)) throw new Error('Invalid email format.');
@@ -40,6 +42,10 @@ const validateUserInput = ({
     const parsedDob = new Date(dob);
     if (isNaN(parsedDob.getTime())) throw new Error('Invalid date of birth (dob).');
 
+    // Validate role
+    if (role !== 'user' && role !== 'company')
+        throw new Error("Invalid role. Role must be 'user' or 'company'.");
+
     return { parsedDob };
 };
 
@@ -49,15 +55,17 @@ const createUser = async ({
     firstName,
     lastName,
     dob,
+    role,
 }: {
     email: string;
     password: string;
     firstName: string;
     lastName: string;
     dob: string;
+    role: Role;
 }): Promise<User> => {
     // Validate input fields
-    const { parsedDob } = validateUserInput({ email, password, dob });
+    const { parsedDob } = validateUserInput({ email, password, dob, role });
 
     const existingUser = await userDB.getUserByEmail({ email });
     if (existingUser) throw new Error(`User already exists.`);
@@ -70,7 +78,7 @@ const createUser = async ({
         firstName,
         lastName,
         dob: parsedDob,
-        role: 'user' as Role,
+        role,
     });
 
     return userDB.createUser(newUser);
@@ -82,7 +90,7 @@ const authenticate = async ({
 }: {
     email: string;
     password: string;
-}): Promise<{ token: string; id: number; email: string; role: string }> => {
+}): Promise<{ token: string; id: number; email: string; fullname: string; role: string }> => {
     const user = await userDB.getUserByEmail({ email });
 
     if (!user) throw new Error('Invalid email or password');
@@ -90,8 +98,19 @@ const authenticate = async ({
     const isPasswordValid = await bcrypt.compare(password, user.getPassword());
     if (!isPasswordValid) throw new Error('Invalid email or password');
 
-    const token = jwtUtil.generateJWTtoken(user.getId(), user.getEmail(), user.getRole());
-    return { token, id: user.getId(), email: user.getEmail(), role: user.getRole() };
+    const token = jwtUtil.generateJWTtoken(
+        user.getId(),
+        user.getEmail(),
+        `${user.getFirstName()} ${user.getLastName()}`,
+        user.getRole()
+    );
+    return {
+        token,
+        id: user.getId(),
+        email: user.getEmail(),
+        fullname: `${user.getFirstName()} ${user.getLastName()}`,
+        role: user.getRole(),
+    };
 };
 
 export default { getAllUsers, getUserByEmail, createUser, authenticate };

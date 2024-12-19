@@ -1,21 +1,13 @@
-import axios from "axios";
+import axios from 'axios';
 
 const BASE_URL = 'http://localhost:3000';
 
 export const loginUser = async (email: string, password: string) => {
     try {
-        const response = await axios.post(`${BASE_URL}/users/login`, {
-            email,
-            password,
-        });
-
-        return response.data; // Response bevat de token en gebruikersinformatie
+        const response = await axios.post(`${BASE_URL}/users/login`, { email, password });
+        return response.data;
     } catch (error: any) {
-        if (error.response && error.response.data && error.response.data.message) {
-            throw new Error(error.response.data.message);
-        } else {
-            throw new Error('An unexpected error occurred during login.');
-        }
+        throw error.response?.data || new Error(error.message || 'Login failed');
     }
 };
 
@@ -24,7 +16,8 @@ export const registerUser = async (
     password: string,
     firstName: string,
     lastName: string,
-    dob: string
+    dob: string,
+    role: string
 ) => {
     try {
         const response = await axios.post(`${BASE_URL}/users/signup`, {
@@ -33,14 +26,10 @@ export const registerUser = async (
             firstName,
             lastName,
             dob,
+            role,
         });
-
         return response.data;
     } catch (error: any) {
-        if (error.response && error.response.data && error.response.data.error) {
-            throw new Error(error.response.data.error);
-        } else {
-            throw new Error('An unexpected error occurred during registration.');
-        }
+        throw error.response?.data || new Error(error.message || 'Registration failed');
     }
 };

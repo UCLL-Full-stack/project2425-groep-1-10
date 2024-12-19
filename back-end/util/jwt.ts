@@ -1,11 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
-const generateJWTtoken = (id: number, email: string, role: string): string => {
+const generateJWTtoken = (id: number, email: string, fullname: string, role: string): string => {
     const secret = process.env.JWT_SECRET || 'defaultSecret';
     const expiresIn = `${process.env.JWT_EXPIRES_HOURS || 8}h`;
 
-    return jwt.sign({ id, email, role }, secret, { expiresIn });
+    return jwt.sign({ id, email, fullname, role }, secret, { expiresIn });
 };
 
 const authorizeRoles = (allowedRoles: string[]) => {

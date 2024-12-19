@@ -70,10 +70,13 @@
         "success": "Registration successful",
         "failed": "Registration failed",
         "alreadyHaveAccount": "Already have an account?",
-        "loginLink": "Login"
+        "loginLink": "Login",
+        "userTab": "Register as user",
+        "companyTab": "Register as company"
     },
-    "logout": "Logout",
     "header": {
-        "login": "Login"
+        "login": "Login",
+        "logout": "Logout",
+        "welcome": "Welcome"
     }
 }

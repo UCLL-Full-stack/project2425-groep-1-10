@@ -241,7 +241,7 @@ userRouter.get(
  */
 userRouter.post('/signup', async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { email, password, firstName, lastName, dob } = req.body;
+        const { email, password, firstName, lastName, dob, role } = req.body;
 
         const newUser = await userService.createUser({
             email,
@@ -249,6 +249,7 @@ userRouter.post('/signup', async (req: Request, res: Response, next: NextFunctio
             firstName,
             lastName,
             dob,
+            role,
         });
 
         res.status(201).json(newUser);

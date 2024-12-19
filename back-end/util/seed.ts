@@ -6,7 +6,8 @@ import bcrypt from 'bcrypt';
 const prisma = new PrismaClient();
 
 const main = async () => {
-    // Delete all existing users
+    // Delete all existing users and profiles
+    await prisma.profile.deleteMany();
     await prisma.user.deleteMany();
 
     // Create an admin user
@@ -61,8 +62,25 @@ const main = async () => {
         },
     ];
 
+    const createdUsers = [];
     for (const user of users) {
-        await prisma.user.create({ data: user });
+        const createdUser = await prisma.user.create({ data: user });
+        createdUsers.push(createdUser);
+    }
+
+    // Create a profile for user1
+    const user1 = createdUsers.find((user) => user.email === 'user.one@example.com');
+    if (user1) {
+        await prisma.profile.create({
+            data: {
+                bio: "This is user one's profile bio.",
+                skills: ['JavaScript', 'TypeScript', 'Prisma'],
+                resumeUrl: 'http://example.com/resume.pdf',
+                userId: user1.id,
+            },
+        });
+    } else {
+        console.error('User one not found, profile creation skipped.');
     }
 };
 

@@ -82,7 +82,7 @@ const authenticate = async ({
 }: {
     email: string;
     password: string;
-}): Promise<{ token: string; email: string; role: string }> => {
+}): Promise<{ token: string; id: number; email: string; role: string }> => {
     const user = await userDB.getUserByEmail({ email });
 
     if (!user) throw new Error('Invalid email or password');
@@ -90,8 +90,8 @@ const authenticate = async ({
     const isPasswordValid = await bcrypt.compare(password, user.getPassword());
     if (!isPasswordValid) throw new Error('Invalid email or password');
 
-    const token = jwtUtil.generateJWTtoken(user.getEmail(), user.getRole());
-    return { token, email: user.getEmail(), role: user.getRole() };
+    const token = jwtUtil.generateJWTtoken(user.getId(), user.getEmail(), user.getRole());
+    return { token, id: user.getId(), email: user.getEmail(), role: user.getRole() };
 };
 
 export default { getAllUsers, getUserByEmail, createUser, authenticate };

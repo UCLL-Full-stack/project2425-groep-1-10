@@ -1,17 +1,18 @@
-import React, { useState, useRef, useEffect } from 'react';
-import Head from 'next/head';
-import Header from '@components/header';
-import Image from 'next/image';
+import React, { useState, useRef, useEffect } from "react";
+import Head from "next/head";
+import Header from "@components/header";
+import Image from "next/image";
+import { useTranslation } from "next-i18next";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 const Vacancies: React.FC = () => {
+    const { t } = useTranslation("common");
     const [selected, setSelected] = useState<number | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
-    const headerHeight = 100; // Assumed height of the header in pixels
 
-    // Mock user data (name and email)
     const user = {
-        name: 'John Doe',
-        email: 'johndoe@example.com',
+        name: "John Doe",
+        email: "johndoe@example.com",
     };
 
     const handleClick = (index: number) => {
@@ -20,13 +21,14 @@ const Vacancies: React.FC = () => {
 
     useEffect(() => {
         if (containerRef.current) {
-            const allGridItems = containerRef.current.querySelectorAll('.grid-item');
+            const allGridItems = containerRef.current.querySelectorAll(".grid-item");
             if (selected !== null && allGridItems[selected]) {
                 const selectedElement = allGridItems[selected] as HTMLElement;
-                const offsetTop = selectedElement.offsetTop - window.innerHeight / 2 + selectedElement.offsetHeight / 2;
-                window.scrollTo({ top: offsetTop, behavior: 'smooth' });
+                const offsetTop =
+                    selectedElement.offsetTop - window.innerHeight / 2 + selectedElement.offsetHeight / 2;
+                window.scrollTo({ top: offsetTop, behavior: "smooth" });
             } else {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                window.scrollTo({ top: 0, behavior: "smooth" });
             }
         }
     }, [selected]);
@@ -34,48 +36,48 @@ const Vacancies: React.FC = () => {
     return (
         <>
             <Head>
-                <title>Vacancies</title>
-                <meta name="description" content="Browse available vacancies" />
+                <title>{t("vacancies.title")}</title>
+                <meta name="description" content={t("vacancies.metaDescription")} />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <Header />
             <main className="min-h-screen bg-blue-100 flex flex-col items-center py-10">
-                <h1 className="text-4xl font-bold mb-8 text-blue-600">Available Vacancies</h1>
+                <h1 className="text-4xl font-bold mb-8 text-blue-600">{t("vacancies.heading")}</h1>
                 <div ref={containerRef} className="grid grid-cols-3 gap-8 w-full px-10 overflow-y-auto">
                     {Array.from({ length: 12 }, (_, index) => (
                         <div
                             key={index}
-                            className={`grid-item transition-all duration-500 cursor-pointer flex flex-col items-center justify-center shadow-lg rounded-lg border bg-white hover:shadow-2xl hover:scale-105 ${selected === index ? 'col-span-3 row-span-2 h-[500px] z-10' : 'h-64'}`}
+                            className={`grid-item transition-all duration-500 cursor-pointer flex flex-col items-center justify-center shadow-lg rounded-lg border bg-white hover:shadow-2xl hover:scale-105 ${selected === index ? "col-span-3 row-span-2 h-[500px] z-10" : "h-64"
+                                }`}
                             onClick={() => handleClick(index)}
                         >
                             <div className="mb-4">
-                                {/* Logo Placeholder */}
                                 <Image
-                                    src="/images/S.png" // Temporary logo path
-                                    alt="Company Logo"
+                                    src="/images/S.png"
+                                    alt={t("vacancies.companyLogo")}
                                     width={50}
                                     height={50}
                                     className="rounded-full shadow-md"
                                 />
                             </div>
                             <p className="text-blue-500 font-semibold text-lg mb-4">
-                                Vacancy {index + 1}
+                                {t("vacancies.item", { number: index + 1 })}
                             </p>
                             <button
                                 onClick={(e) => {
                                     e.stopPropagation();
-                                    const vacancyName = `Vacancy ${index + 1}`;
+                                    const vacancyName = `${t("vacancies.item", { number: index + 1 })}`;
                                     const queryParams = new URLSearchParams({
                                         vacancy: vacancyName,
                                         name: user.name,
                                         email: user.email,
                                     }).toString();
-                                    window.open(`/apply?${queryParams}`, '_blank');
+                                    window.open(`/apply?${queryParams}`, "_blank");
                                 }}
                                 className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300"
                             >
-                                Apply Now
+                                {t("vacancies.applyNow")}
                             </button>
                         </div>
                     ))}
@@ -84,5 +86,13 @@ const Vacancies: React.FC = () => {
         </>
     );
 };
+
+export async function getStaticProps({ locale }: { locale: string }) {
+    return {
+        props: {
+            ...(await serverSideTranslations(locale, ["common"])),
+        },
+    };
+}
 
 export default Vacancies;

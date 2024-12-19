@@ -1,0 +1,75 @@
+{
+    "app": {
+        "title": "Shifter",
+        "description": "Kies een dienst die je wilt en wacht tot je wordt aangenomen!",
+        "logoAlt": "Shifter Logo"
+    },
+    "home": "Home",
+    "headerVacancies": "Vacatures",
+    "vacancies": {
+        "title": "Vacatures",
+        "metaDescription": "Bekijk beschikbare vacatures",
+        "heading": "Beschikbare Vacatures",
+        "companyLogo": "Bedrijfslogo",
+        "item": "Vacature {{number}}",
+        "applyNow": "Solliciteer Nu"
+    },
+    "progress": "Voortgang",
+    "employer": "Werkgever",
+    "login": "Inloggen",
+    "register": "Registreren",
+    "welcome": "Welkom bij Shifter!",
+    "getStartedButton": "Begin nu",
+    "descriptionExtended": "Kies de dienst die het beste bij je past en laat Shifter de rest regelen.",
+    "progressPage": {
+        "title": "Voortgang",
+        "metaDescription": "Volg de voortgang van je sollicitaties",
+        "heading": "Voortgang Sollicitaties"
+    },
+    "ProgressVacancies": "Vacatures",
+    "date": "Sollicitatiedatum",
+    "status": "Status",
+    "vacancy1": "Vacature 1",
+    "vacancy2": "Vacature 2",
+    "vacancy3": "Vacature 3",
+    "vacancy4": "Vacature 4",
+    "vacancy5": "Vacature 5",
+    "employerPage": {
+        "title": "Werkgever Dashboard",
+        "metaDescription": "Bekijk alle ontvangen sollicitaties",
+        "heading": "Sollicitaties",
+        "company": "Bedrijf",
+        "applicantName": "Naam van de sollicitant",
+        "applicantEmail": "E-mailadres van de sollicitant",
+        "noApplications": "Nog geen sollicitaties."
+    },
+    "loginPage": {
+        "title": "Inloggen",
+        "metaDescription": "Log in op je account",
+        "heading": "Inloggen",
+        "emailLabel": "E-mailadres",
+        "passwordLabel": "Wachtwoord",
+        "buttonText": "Inloggen",
+        "success": "Succesvol ingelogd",
+        "failed": "Inloggen mislukt",
+        "noAccount": "Heb je geen account?",
+        "registerLink": "Registreren"
+    },
+    "registerPage": {
+        "title": "Registreren",
+        "metaDescription": "Registreer een nieuw account",
+        "heading": "Registreren",
+        "emailLabel": "E-mailadres",
+        "firstNameLabel": "Voornaam",
+        "lastNameLabel": "Achternaam",
+        "dobLabel": "Geboortedatum",
+        "passwordLabel": "Wachtwoord",
+        "confirmPasswordLabel": "Bevestig wachtwoord",
+        "passwordMismatch": "Wachtwoorden komen niet overeen",
+        "buttonText": "Registreren",
+        "success": "Registratie geslaagd",
+        "failed": "Registratie mislukt",
+        "alreadyHaveAccount": "Heb je al een account?",
+        "loginLink": "Inloggen"
+    }
+}

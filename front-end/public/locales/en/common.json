@@ -1,0 +1,75 @@
+{
+    "app": {
+        "title": "Shifter",
+        "description": "Pick a shift you want and wait until you get hired!",
+        "logoAlt": "Shifter Logo"
+    },
+    "home": "Home",
+    "headerVacancies": "Vacancies",
+    "vacancies": {
+        "title": "Vacancies",
+        "metaDescription": "Browse available vacancies",
+        "heading": "Available Vacancies",
+        "companyLogo": "Company Logo",
+        "item": "Vacancy {{number}}",
+        "applyNow": "Apply Now"
+    },
+    "progress": "Progress",
+    "employer": "Employer",
+    "login": "Login",
+    "register": "Register",
+    "welcome": "Welcome to Shifter!",
+    "getStartedButton": "Get Started",
+    "descriptionExtended": "Pick the shift that suits you best and let Shifter handle the rest.",
+    "progressPage": {
+        "title": "Progress",
+        "metaDescription": "Track your application progress",
+        "heading": "Application Progress"
+    },
+    "ProgressVacancies": "Vacancies",
+    "date": "Apply Date",
+    "status": "Status",
+    "vacancy1": "Vacancy 1",
+    "vacancy2": "Vacancy 2",
+    "vacancy3": "Vacancy 3",
+    "vacancy4": "Vacancy 4",
+    "vacancy5": "Vacancy 5",
+    "employerPage": {
+        "title": "Employer Dashboard",
+        "metaDescription": "View all job applications received",
+        "heading": "Job Applications",
+        "company": "Company",
+        "applicantName": "Applicant Name",
+        "applicantEmail": "Applicant Email",
+        "noApplications": "No job applications yet."
+    },
+    "loginPage": {
+        "title": "Login",
+        "metaDescription": "Login to your account",
+        "heading": "Login",
+        "emailLabel": "Email",
+        "passwordLabel": "Password",
+        "buttonText": "Login",
+        "success": "Login successful",
+        "failed": "Login failed",
+        "noAccount": "Don't have an account?",
+        "registerLink": "Register"
+    },
+    "registerPage": {
+        "title": "Register",
+        "metaDescription": "Register a new account",
+        "heading": "Register",
+        "emailLabel": "Email",
+        "firstNameLabel": "First Name",
+        "lastNameLabel": "Last Name",
+        "dobLabel": "Date of Birth",
+        "passwordLabel": "Password",
+        "confirmPasswordLabel": "Confirm Password",
+        "passwordMismatch": "Passwords do not match",
+        "buttonText": "Register",
+        "success": "Registration successful",
+        "failed": "Registration failed",
+        "alreadyHaveAccount": "Already have an account?",
+        "loginLink": "Login"
+    }
+}

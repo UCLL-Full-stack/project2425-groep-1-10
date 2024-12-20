@@ -55,6 +55,12 @@
  *           type: number
  *           format: int64
  *           description: ID of the user associated with the profile.
+ *     ErrorResponse:
+ *       type: object
+ *       properties:
+ *         error:
+ *           type: string
+ *           description: Error message.
  */
 
 import express, { NextFunction, Request, Response } from 'express';
@@ -79,25 +85,7 @@ const profileRouter = express.Router();
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 id:
- *                   type: number
- *                   description: Profile ID
- *                 bio:
- *                   type: string
- *                   description: User biography
- *                 skills:
- *                   type: array
- *                   items:
- *                     type: string
- *                   description: List of user skills
- *                 resumeUrl:
- *                   type: string
- *                   description: URL to the user resume
- *                 userId:
- *                   type: number
- *                   description: ID of the user associated with the profile
+ *               $ref: '#/components/schemas/Profile'
  *       401:
  *         description: Unauthorized. User must provide a valid JWT.
  *       500:
@@ -144,8 +132,16 @@ profileRouter.get(
  *               $ref: '#/components/schemas/Profile'
  *       404:
  *         description: Profile not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  *       500:
  *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 profileRouter.get(
     '/:id',
@@ -154,6 +150,11 @@ profileRouter.get(
         try {
             const profileId = Number(req.params.id);
             const profile = await profileService.getProfileById(profileId);
+
+            if (!profile) {
+                return res.status(404).json({ error: 'Profile not found' });
+            }
+
             res.status(200).json(profile);
         } catch (error) {
             next(error);
@@ -179,10 +180,22 @@ profileRouter.get(
  *     responses:
  *       201:
  *         description: Profile created successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Profile'
  *       400:
  *         description: Invalid request data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  *       500:
  *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 profileRouter.post(
     '/',
@@ -201,6 +214,33 @@ profileRouter.post(
     }
 );
 
+/**
+ * @swagger
+ * /profiles:
+ *   put:
+ *     security:
+ *       - bearerAuth: []
+ *     summary: Update the profile of the authenticated user
+ *     tags:
+ *       - Profiles
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ProfileInput'
+ *     responses:
+ *       200:
+ *         description: Profile updated successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Profile'
+ *       400:
+ *         description: Invalid request data.
+ *       500:
+ *         description: Internal server error.
+ */
 profileRouter.put(
     '/',
     jwtUtil.authorizeRoles(['user', 'company', 'admin']),
@@ -209,62 +249,7 @@ profileRouter.put(
             const userId = Number(req.auth.id);
             if (isNaN(userId)) throw new Error('Invalid user ID.');
 
-            let profile = await profileService.getProfileByUserId(userId);
-            profile = await profileService.updateProfile(profile.getId(), req.body);
-
-            res.status(201).json(profile);
-        } catch (error) {
-            next(error);
-        }
-    }
-);
-
-/**
- * @swagger
- * /profiles/{id}:
- *   patch:
- *     security:
- *       - bearerAuth: []
- *     summary: Update a profile
- *     tags:
- *       - Profiles
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: number
- *         description: Profile ID
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               bio:
- *                 type: string
- *               skills:
- *                 type: array
- *                 items:
- *                   type: string
- *               resumeUrl:
- *                 type: string
- *     responses:
- *       200:
- *         description: Profile updated successfully.
- *       404:
- *         description: Profile not found.
- *       500:
- *         description: Internal server error.
- */
-profileRouter.patch(
-    '/:id',
-    jwtUtil.authorizeRoles(['admin']),
-    async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const profileId = Number(req.params.id);
-            const updatedProfile = await profileService.updateProfile(profileId, req.body);
+            const updatedProfile = await profileService.updateProfile(userId, req.body);
             res.status(200).json(updatedProfile);
         } catch (error) {
             next(error);
@@ -293,6 +278,10 @@ profileRouter.patch(
  *         description: Profile deleted successfully.
  *       404:
  *         description: Profile not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  *       500:
  *         description: Internal server error.
  */

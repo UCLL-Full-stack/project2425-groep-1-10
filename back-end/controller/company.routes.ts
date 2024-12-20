@@ -1,3 +1,60 @@
+/**
+ * @swagger
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ *   schemas:
+ *     Company:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: number
+ *           format: int64
+ *           description: Company ID.
+ *         name:
+ *           type: string
+ *           description: Name of the company.
+ *         description:
+ *           type: string
+ *           description: Description of the company.
+ *         websiteUrl:
+ *           type: string
+ *           description: URL of the company's website.
+ *         createdBy:
+ *           type: number
+ *           format: int64
+ *           description: User ID who created the company.
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           description: When the company was created.
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *           description: When the company was last updated.
+ *     CompanyInput:
+ *       type: object
+ *       properties:
+ *         name:
+ *           type: string
+ *           description: Name of the company.
+ *         description:
+ *           type: string
+ *           description: Description of the company.
+ *         websiteUrl:
+ *           type: string
+ *           description: URL of the company's website.
+ *     ErrorResponse:
+ *       type: object
+ *       properties:
+ *         error:
+ *           type: string
+ *           description: Error message.
+ */
+
 import express, { NextFunction, Request, Response } from 'express';
 import jwtUtil from '../util/jwt';
 import companyService from '../service/company.service';
@@ -25,8 +82,16 @@ const companyRouter = express.Router();
  *                 $ref: '#/components/schemas/Company'
  *       401:
  *         description: Unauthorized access.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  *       500:
  *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 companyRouter.get(
     '/',
@@ -66,8 +131,16 @@ companyRouter.get(
  *               $ref: '#/components/schemas/Company'
  *       404:
  *         description: Company not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  *       500:
  *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 companyRouter.get(
     '/:id',
@@ -76,6 +149,11 @@ companyRouter.get(
         try {
             const companyId = Number(req.params.id);
             const company = await companyService.getCompanyById(companyId);
+
+            if (!company) {
+                return res.status(404).json({ error: 'Company not found' });
+            }
+
             res.status(200).json(company);
         } catch (error) {
             next(error);
@@ -83,6 +161,41 @@ companyRouter.get(
     }
 );
 
+/**
+ * @swagger
+ * /companies:
+ *   post:
+ *     security:
+ *       - bearerAuth: []
+ *     summary: Create a new company
+ *     tags:
+ *       - Companies
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CompanyInput'
+ *     responses:
+ *       201:
+ *         description: Company created successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Company'
+ *       400:
+ *         description: Invalid request data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 companyRouter.post(
     '/',
     jwtUtil.authorizeRoles(['company']),
@@ -90,9 +203,6 @@ companyRouter.post(
         try {
             const userId = Number(req.auth.id);
             if (isNaN(userId)) throw new Error('Invalid user ID.');
-
-            // if (companyService.getCompanyByUserId(userId))
-            //     throw new Error('Company already exists for this user.');
 
             const companyData = {
                 ...req.body,
@@ -110,7 +220,7 @@ companyRouter.post(
 /**
  * @swagger
  * /companies/{id}:
- *   patch:
+ *   put:
  *     security:
  *       - bearerAuth: []
  *     summary: Update a company
@@ -128,23 +238,28 @@ companyRouter.post(
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *               description:
- *                 type: string
- *               websiteUrl:
- *                 type: string
+ *             $ref: '#/components/schemas/CompanyInput'
  *     responses:
  *       200:
  *         description: Company updated successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Company'
  *       404:
  *         description: Company not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  *       500:
  *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
-companyRouter.patch(
+companyRouter.put(
     '/:id',
     jwtUtil.authorizeRoles(['admin']),
     async (req: Request, res: Response, next: NextFunction) => {
@@ -179,8 +294,16 @@ companyRouter.patch(
  *         description: Company deleted successfully.
  *       404:
  *         description: Company not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  *       500:
  *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 companyRouter.delete(
     '/:id',

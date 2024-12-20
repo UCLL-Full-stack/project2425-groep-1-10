@@ -1,84 +1,99 @@
 /**
  * @swagger
- *   components:
- *     securitySchemes:
- *       bearerAuth:
- *         type: http
- *         scheme: bearer
- *         bearerFormat: JWT
- *     schemas:
- *       AuthenticationResponse:
- *         type: object
- *         properties:
- *           message:
- *             type: string
- *             description: Authentication response.
- *           token:
- *             type: string
- *             description: JWT access token.
- *           fullname:
- *             type: string
- *             description: Full name of the user.
- *           role:
- *             type: string
- *             description: Role of the user.
- *       AuthenticationRequest:
- *         type: object
- *         properties:
- *           email:
- *             type: string
- *             description: User email.
- *           password:
- *             type: string
- *             description: User password.
- *       User:
- *         type: object
- *         properties:
- *           id:
- *             type: number
- *             format: int64
- *           email:
- *             type: string
- *             description: E-mail of the user.
- *           password:
- *             type: string
- *             description: User password.
- *           firstName:
- *             type: string
- *             description: First name.
- *           lastName:
- *             type: string
- *             description: Last name.
- *           dob:
- *             type: string
- *             format: date
- *             description: Date of birth.
- *       UserInput:
- *         type: object
- *         properties:
- *           email:
- *             type: string
- *             description: E-mail of the user.
- *           password:
- *             type: string
- *             description: User password.
- *           firstName:
- *             type: string
- *             description: First name.
- *           lastName:
- *             type: string
- *             description: Last name.
- *           dob:
- *             type: string
- *             format: date
- *             description: Date of birth.
- *       Role:
- *         type: string
- *         enum:
- *           - admin
- *           - company
- *           - user
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ *   schemas:
+ *     AuthenticationResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *           description: Authentication response message.
+ *         token:
+ *           type: string
+ *           description: JWT access token.
+ *         fullname:
+ *           type: string
+ *           description: Full name of the user.
+ *         role:
+ *           type: string
+ *           description: Role of the user.
+ *     AuthenticationRequest:
+ *       type: object
+ *       properties:
+ *         email:
+ *           type: string
+ *           description: User email.
+ *         password:
+ *           type: string
+ *           description: User password.
+ *     User:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: number
+ *           format: int64
+ *         email:
+ *           type: string
+ *           description: E-mail of the user.
+ *         password:
+ *           type: string
+ *           description: User password.
+ *         firstName:
+ *           type: string
+ *           description: First name.
+ *         lastName:
+ *           type: string
+ *           description: Last name.
+ *         dob:
+ *           type: string
+ *           format: date
+ *           description: Date of birth.
+ *         role:
+ *           type: string
+ *           enum:
+ *             - admin
+ *             - company
+ *             - user
+ *           description: Role of the user.
+ *     UserInput:
+ *       type: object
+ *       properties:
+ *         email:
+ *           type: string
+ *           description: E-mail of the user.
+ *         password:
+ *           type: string
+ *           description: User password.
+ *         firstName:
+ *           type: string
+ *           description: First name.
+ *         lastName:
+ *           type: string
+ *           description: Last name.
+ *         dob:
+ *           type: string
+ *           format: date
+ *           description: Date of birth.
+ *         role:
+ *           type: string
+ *           enum:
+ *             - admin
+ *             - company
+ *             - user
+ *           description: Role of the user.
+ *     ErrorResponse:
+ *       type: object
+ *       properties:
+ *         error:
+ *           type: string
+ *           description: Error message.
  */
+
 import express, { NextFunction, Request, Response } from 'express';
 import userService from '../service/user.service';
 import { UserInput } from '../types/index';
@@ -93,6 +108,8 @@ const userRouter = express.Router();
  *     security:
  *       - bearerAuth: []
  *     summary: Get a list of all users
+ *     tags:
+ *       - Users
  *     responses:
  *       200:
  *         description: A list of users.
@@ -101,7 +118,13 @@ const userRouter = express.Router();
  *             schema:
  *               type: array
  *               items:
- *                  $ref: '#/components/schemas/User'
+ *                 $ref: '#/components/schemas/User'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 userRouter.get(
     '/',
@@ -123,6 +146,8 @@ userRouter.get(
  *     security:
  *       - bearerAuth: []
  *     summary: Get a user by their email
+ *     tags:
+ *       - Users
  *     parameters:
  *       - in: path
  *         name: email
@@ -139,8 +164,16 @@ userRouter.get(
  *               $ref: '#/components/schemas/User'
  *       404:
  *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  *       500:
  *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 userRouter.get(
     '/:email',
@@ -151,9 +184,13 @@ userRouter.get(
 
             const user = await userService.getUserByEmail({ email });
 
+            if (!user) {
+                return res.status(404).json({ error: 'User not found' });
+            }
+
             res.status(200).json(user);
         } catch (error) {
-            res.status(404).json({ error: error.message }); // Set more errors
+            next(error);
         }
     }
 );
@@ -180,8 +217,16 @@ userRouter.get(
  *               $ref: '#/components/schemas/User'
  *       400:
  *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  *       500:
  *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 userRouter.post('/signup', async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -214,28 +259,26 @@ userRouter.post('/signup', async (req: Request, res: Response, next: NextFunctio
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               email:
- *                 type: string
- *               password:
- *                 type: string
+ *             $ref: '#/components/schemas/AuthenticationRequest'
  *     responses:
  *       200:
  *         description: Authentication successful
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 token:
- *                   type: string
- *                 email:
- *                   type: string
- *                 role:
- *                   type: string
+ *               $ref: '#/components/schemas/AuthenticationResponse'
  *       401:
  *         description: Invalid credentials
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 userRouter.post('/login', async (req: Request, res: Response, next: NextFunction) => {
     try {

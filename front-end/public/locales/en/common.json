@@ -54,15 +54,23 @@
     },
     "loginPage": {
         "title": "Login",
-        "metaDescription": "Login to your account",
-        "heading": "Login",
+        "heading": "Login to your account",
         "emailLabel": "Email",
         "passwordLabel": "Password",
         "buttonText": "Login",
-        "success": "Login successful",
-        "failed": "Login failed",
         "noAccount": "Don't have an account?",
-        "registerLink": "Register"
+        "registerLink": "Register",
+        "usersTable": {
+            "heading": "Users",
+            "email": "Email",
+            "password": "Password",
+            "role": "Role",
+            "roles": {
+                "admin": "Admin",
+                "user": "User",
+                "company": "Company"
+            }
+        }
     },
     "registerPage": {
         "title": "Register",

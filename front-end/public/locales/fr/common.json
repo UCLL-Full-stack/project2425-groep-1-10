@@ -1,20 +1,20 @@
 {
     "app": {
         "title": "Shifter",
-        "description": "Choisissez un poste qui vous convient et attendez d\u2019être embauché !",
-        "logoAlt": "Logo de Shifter"
+        "description": "Choisissez un poste qui vous convient et attendez d'être embauché !",
+        "logoAlt": "Logo Shifter"
     },
     "home": "Accueil",
-    "headerVacancies": "Postes disponibles",
+    "headerVacancies": "Offres d'emploi",
     "vacancies": {
         "title": "Offres d'emploi",
-        "metaDescription": "Parcourez et postulez aux offres d'emploi adaptées à vos compétences.",
-        "heading": "Postes disponibles",
+        "metaDescription": "Consultez et postulez aux offres d'emploi adaptées à vos compétences.",
+        "heading": "Offres d'emploi disponibles",
         "loading": "Chargement des offres d'emploi...",
         "noVacancies": "Aucune offre d'emploi ne correspond à vos compétences pour le moment.",
-        "applyNow": "Postuler maintenant",
+        "applyNow": "Postuler",
         "companyLogo": "Logo de l'entreprise",
-        "confirmApplication": "Êtes-vous sûr de vouloir postuler pour le poste : {{vacancy}} ?",
+        "confirmApplication": "Êtes-vous sûr de vouloir postuler au poste : {{vacancy}} ?",
         "yes": "Oui",
         "no": "Non"
     },
@@ -22,22 +22,22 @@
     "employer": "Employeur",
     "login": "Connexion",
     "register": "Inscription",
-    "welcome": "Bienvenue sur Shifter !",
+    "welcome": "Bienvenue chez Shifter !",
     "getStartedButton": "Commencer",
     "descriptionExtended": "Choisissez le poste qui vous convient le mieux et laissez Shifter s'occuper du reste.",
     "progressPage": {
-        "title": "Suivi des candidatures",
-        "metaDescription": "Suivez l'avancement de vos candidatures.",
+        "title": "Progression des candidatures",
+        "metaDescription": "Suivez la progression de vos candidatures.",
         "heading": "Vos candidatures",
         "loading": "Chargement de vos candidatures...",
-        "noApplications": "Vous n'avez pas encore postulé à un emploi."
+        "noApplications": "Vous n'avez pas encore postulé à des offres."
     },
     "JobTitle": "Titre du poste",
     "ApplicationDate": "Date de candidature",
     "ApplicationStatus": "Statut de la candidature",
     "applications": {
         "title": "Candidatures",
-        "metaDescription": "Gérez les candidatures pour les emplois publiés par votre entreprise.",
+        "metaDescription": "Gérez les candidatures pour les offres publiées par votre entreprise.",
         "heading": "Candidatures en attente",
         "loading": "Chargement des candidatures...",
         "noApplications": "Aucune candidature en attente pour le moment.",
@@ -54,15 +54,23 @@
     },
     "loginPage": {
         "title": "Connexion",
-        "metaDescription": "Connectez-vous à votre compte",
-        "heading": "Connexion",
+        "heading": "Connectez-vous à votre compte",
         "emailLabel": "Email",
         "passwordLabel": "Mot de passe",
-        "buttonText": "Connexion",
-        "success": "Connexion réussie",
-        "failed": "Échec de la connexion",
+        "buttonText": "Se connecter",
         "noAccount": "Vous n'avez pas de compte ?",
-        "registerLink": "S'inscrire"
+        "registerLink": "S'inscrire",
+        "usersTable": {
+            "heading": "Utilisateurs",
+            "email": "Email",
+            "password": "Mot de passe",
+            "role": "Rôle",
+            "roles": {
+                "admin": "Administrateur",
+                "user": "Utilisateur",
+                "company": "Entreprise"
+            }
+        }
     },
     "registerPage": {
         "title": "Inscription",
@@ -70,16 +78,16 @@
         "heading": "Inscription",
         "emailLabel": "Email",
         "firstNameLabel": "Prénom",
-        "lastNameLabel": "Nom",
+        "lastNameLabel": "Nom de famille",
         "dobLabel": "Date de naissance",
         "passwordLabel": "Mot de passe",
-        "confirmPasswordLabel": "Confirmez le mot de passe",
+        "confirmPasswordLabel": "Confirmer le mot de passe",
         "passwordMismatch": "Les mots de passe ne correspondent pas",
         "buttonText": "S'inscrire",
         "success": "Inscription réussie",
-        "failed": "Échec de l'inscription",
+        "failed": "Inscription échouée",
         "alreadyHaveAccount": "Vous avez déjà un compte ?",
-        "loginLink": "Connexion",
+        "loginLink": "Se connecter",
         "userTab": "S'inscrire en tant qu'utilisateur",
         "companyTab": "S'inscrire en tant qu'entreprise",
         "companyNameLabel": "Nom de l'entreprise",
@@ -87,24 +95,24 @@
         "websiteUrlLabel": "URL du site web"
     },
     "vacancyUploadPage": {
-        "uploadVacancyTitle": "Publier une offre d'emploi",
+        "uploadVacancyTitle": "Publier une offre",
         "errorMessage": "Erreur : {{error}}",
-        "successMessage": "Offre d'emploi publiée avec succès !",
+        "successMessage": "Offre publiée avec succès !",
         "vacancyTitleLabel": "Titre de l'offre",
         "vacancyTitlePlaceholder": "Entrez le titre de l'offre",
         "descriptionLabel": "Description",
         "descriptionPlaceholder": "Décrivez l'offre",
         "requirementsLabel": "Exigences",
-        "requirementsPlaceholder": "Listez les exigences pour ce poste",
-        "salaryRangeLabel": "Fourchette salariale",
-        "salaryRangePlaceholder": "Entrez la fourchette salariale (ex : 50 000 € - 70 000 €)",
+        "requirementsPlaceholder": "Listez les exigences pour cette offre",
+        "salaryRangeLabel": "Fourchette de salaire",
+        "salaryRangePlaceholder": "Entrez la fourchette de salaire (par ex. 50 000 € - 70 000 €)",
         "locationLabel": "Lieu",
-        "locationPlaceholder": "Entrez le lieu du poste",
+        "locationPlaceholder": "Entrez le lieu de l'offre",
         "submitButton": "Soumettre l'offre",
         "loadingButton": "Publication en cours..."
     },
     "vacanciesOverviewPage": {
-        "title": "Aperçu des offres",
+        "title": "Vue d'ensemble des offres",
         "loadingMessage": "Chargement des offres...",
         "errorMessage": "Une erreur s'est produite : {{error}}",
         "noVacanciesMessage": "Aucune offre disponible pour le moment.",
@@ -113,10 +121,23 @@
         "yes": "Oui",
         "no": "Non"
     },
+    "editProfilePage": {
+        "title": "Modifier le profil",
+        "metaDescription": "Mettez à jour les informations de votre profil.",
+        "heading": "Modifier votre profil",
+        "bioLabel": "Bio",
+        "skillsLabel": "Compétences",
+        "skillsPlaceholder": "ex. JavaScript, React, Node.js",
+        "resumeUrlLabel": "URL du CV",
+        "buttonText": "Enregistrer les modifications",
+        "successMessage": "Profil mis à jour avec succès !",
+        "failed": "Échec de la mise à jour du profil. Veuillez réessayer."
+    },
     "header": {
         "login": "Connexion",
         "logout": "Déconnexion",
-        "welcome": "Bienvenue"
+        "welcome": "Bienvenue",
+        "editProfile": "Modifier le profil"
     },
     "messages": {
         "applicationConfirmed": "Candidature confirmée !",

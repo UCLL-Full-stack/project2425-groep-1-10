@@ -15,6 +15,12 @@ const Login: React.FC = () => {
     const [authenticated, setAuthenticated] = useState(false);
     const router = useRouter();
 
+    const users = [
+        { email: 'admin@example.com', password: 'admin123', role: 'Admin' },
+        { email: 'user.one@example.com', password: 'user123', role: 'user' },
+        { email: 'company.one@example.com', password: 'company123', role: 'company' },
+    ];
+
     useEffect(() => {
         const checkAuthentication = async () => {
             const loggedInUser = localStorage.getItem('loggedInUser');
@@ -71,7 +77,7 @@ const Login: React.FC = () => {
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
-            <div className="min-h-screen flex items-center justify-center bg-blue-100 relative">
+            <div className="min-h-screen flex flex-col items-center justify-center bg-blue-100 relative">
                 <div className="absolute top-5 left-5">
                     <Language textColor="text-blue-500" />
                 </div>
@@ -120,7 +126,30 @@ const Login: React.FC = () => {
                         </Link>
                     </p>
                 </div>
+                <div className="mt-6">
+                    <h2 className="text-xl font-bold mb-4 text-center">Gebruikers</h2>
+                    <table className="w-full border-collapse border border-gray-300">
+                        <thead>
+                            <tr>
+                                <th className="border border-gray-300 px-4 py-2">Email</th>
+                                <th className="border border-gray-300 px-4 py-2">Wachtwoord</th>
+                                <th className="border border-gray-300 px-4 py-2">Rol</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {users.map((user, index) => (
+                                <tr key={index}>
+                                    <td className="border border-gray-300 px-4 py-2">{user.email}</td>
+                                    <td className="border border-gray-300 px-4 py-2">{user.password}</td>
+                                    <td className="border border-gray-300 px-4 py-2">{user.role}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
+
+
         </>
     );
 };

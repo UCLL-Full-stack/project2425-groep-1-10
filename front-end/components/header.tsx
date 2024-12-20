@@ -21,7 +21,7 @@ const Header: React.FC = () => {
             // Redirect company users to employer page if they are not already on employer-related pages
             if (
                 parsedUser.role === 'company' &&
-                !['/employer', '/vacancyUpload'].includes(router.pathname)
+                !['/employer', '/vacancyUpload', '/vacanciesOverview'].includes(router.pathname)
             ) {
                 router.push('/employer');
             }
@@ -114,6 +114,12 @@ const Header: React.FC = () => {
                                     className="text-white text-xl font-semibold relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-transform after:duration-300 hover:after:w-full"
                                 >
                                     {t('vacancyUpload')}
+                                </Link>
+                                <Link
+                                    href="/vacanciesOverview"
+                                    className="text-white text-xl font-semibold relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-transform after:duration-300 hover:after:w-full"
+                                >
+                                    {t('vacanciesOverview')}
                                 </Link>
                             </>
                         )}

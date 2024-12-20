@@ -5,6 +5,10 @@ const getAllJobs = async (): Promise<Job[]> => {
     return jobDB.getAllJobs();
 };
 
+const getJobsByCompanyId = async (id: number): Promise<Job[]> => {
+    return jobDB.getJobsByCompanyId(id);
+};
+
 const getJobById = async (id: number): Promise<Job> => {
     const job = await jobDB.getJobById(id);
     if (!job) throw new Error('Job not found');
@@ -57,6 +61,7 @@ const deleteJob = async (id: number): Promise<void> => {
 
 export default {
     getAllJobs,
+    getJobsByCompanyId,
     getJobById,
     createJob,
     updateJob,

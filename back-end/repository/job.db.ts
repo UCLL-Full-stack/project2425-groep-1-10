@@ -6,6 +6,11 @@ const getAllJobs = async (): Promise<Job[]> => {
     return prismaJobs.map((job) => Job.from(job));
 };
 
+const getJobsByCompanyId = async (companyId: number): Promise<Job[] | null> => {
+    const prismaJobs = await database.job.findMany({ where: { companyId } });
+    return prismaJobs.map((job) => Job.from(job));
+};
+
 const getJobById = async (id: number): Promise<Job | null> => {
     const prismaJob = await database.job.findUnique({ where: { id } });
     return prismaJob ? Job.from(prismaJob) : null;
@@ -48,6 +53,7 @@ const deleteJob = async (id: number): Promise<void> => {
 
 export default {
     getAllJobs,
+    getJobsByCompanyId,
     getJobById,
     createJob,
     updateJob,

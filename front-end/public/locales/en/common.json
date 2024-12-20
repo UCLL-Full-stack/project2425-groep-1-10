@@ -94,6 +94,16 @@
         "submitButton": "Submit Vacancy",
         "loadingButton": "Uploading..."
     },
+    "vacanciesOverviewPage": {
+        "title": "Your Vacancies",
+        "loadingMessage": "Loading vacancies...",
+        "errorMessage": "An error occurred: {{error}}",
+        "noVacanciesMessage": "No vacancies found.",
+        "vacancyTitle": "Title",
+        "vacancyLocation": "Location",
+        "vacancySalaryRange": "Salary Range",
+        "vacancyDescription": "Description"
+    },
     "header": {
         "login": "Login",
         "logout": "Logout",

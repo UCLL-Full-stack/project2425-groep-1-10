@@ -14,7 +14,8 @@ interface Application {
         title: string;
     };
     user: {
-        fullname: string;
+        firstName: string;
+        lastName: string;
         email: string;
     };
     status: string;
@@ -26,8 +27,12 @@ const EmployerApplications: React.FC = () => {
     const [applications, setApplications] = useState<Application[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [showPopup, setShowPopup] = useState(false);
+    const [popupData, setPopupData] = useState<{ applicationId: string; status: string }>({
+        applicationId: '',
+        status: '',
+    });
 
-    // Function to fetch applications
     const fetchApplications = async () => {
         setLoading(true);
         setError(null);
@@ -46,24 +51,29 @@ const EmployerApplications: React.FC = () => {
         }
     };
 
-    // Fetch applications on component mount
     useEffect(() => {
         fetchApplications();
     }, []);
 
-    // Handle application status change
-    const handleStatusChange = async (applicationId: string, status: string) => {
+    const handleStatusClick = (applicationId: string, status: string) => {
+        setPopupData({ applicationId, status });
+        setShowPopup(true);
+    };
+
+    const confirmStatusChange = async () => {
         try {
             const loggedInUser = localStorage.getItem('loggedInUser');
             if (loggedInUser) {
                 const token = JSON.parse(loggedInUser).token;
-                await updateApplicationStatus(token, applicationId, status);
+                await updateApplicationStatus(token, popupData.applicationId, popupData.status);
 
                 // Refetch the updated list after status change
                 await fetchApplications();
             }
         } catch (err: any) {
             setError(err.message || 'Failed to update application status.');
+        } finally {
+            setShowPopup(false);
         }
     };
 
@@ -100,19 +110,19 @@ const EmployerApplications: React.FC = () => {
                             >
                                 <div>{app.job.title}</div>
                                 <div>
-                                    {app.user.fullname} <br />
+                                    {app.user.firstName} {app.user.lastName} <br />
                                     <span className="text-sm text-gray-500">{app.user.email}</span>
                                 </div>
                                 <div>{new Date(app.createdAt).toLocaleDateString()}</div>
                                 <div className="flex justify-center space-x-4">
                                     <button
-                                        onClick={() => handleStatusChange(app.id, 'accepted')}
+                                        onClick={() => handleStatusClick(app.id, 'accepted')}
                                         className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
                                     >
                                         {t('applications.accept')}
                                     </button>
                                     <button
-                                        onClick={() => handleStatusChange(app.id, 'rejected')}
+                                        onClick={() => handleStatusClick(app.id, 'rejected')}
                                         className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
                                     >
                                         {t('applications.deny')}
@@ -124,6 +134,30 @@ const EmployerApplications: React.FC = () => {
                 ) : (
                     <div className="text-center text-gray-600">
                         {t('applications.noApplications')}
+                    </div>
+                )}
+
+                {showPopup && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                        <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+                            <p className="text-lg mb-4">
+                                {popupData.status === 'accepted'
+                                    ? t('applications.confirmAccept')
+                                    : t('applications.confirmDeny')}
+                            </p>
+                            <button
+                                onClick={confirmStatusChange}
+                                className="bg-green-500 text-white px-4 py-2 rounded mr-4 hover:bg-green-600"
+                            >
+                                {t('applications.yes')}
+                            </button>
+                            <button
+                                onClick={() => setShowPopup(false)}
+                                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                            >
+                                {t('applications.no')}
+                            </button>
+                        </div>
                     </div>
                 )}
             </main>

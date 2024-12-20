@@ -26,8 +26,18 @@ const getApplicationsByCompanyId = async (companyId: number) => {
             status: 'pending' as ApplicationStatus,
         },
         include: {
-            user: true,
-            job: true,
+            user: {
+                select: {
+                    firstName: true,
+                    lastName: true,
+                    email: true,
+                },
+            },
+            job: {
+                select: {
+                    title: true,
+                },
+            },
         },
     });
 };

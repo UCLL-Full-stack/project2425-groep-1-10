@@ -47,7 +47,10 @@
         "actions": "Actions",
         "accept": "Accept",
         "deny": "Deny",
-        "noTitle": "No Title Available"
+        "confirmAccept": "Are you sure you want to accept this application?",
+        "confirmDeny": "Are you sure you want to deny this application?",
+        "yes": "Yes",
+        "no": "No"
     },
     "loginPage": {
         "title": "Login",

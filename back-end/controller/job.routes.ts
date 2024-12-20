@@ -48,4 +48,33 @@ jobRouter.post(
     }
 );
 
+jobRouter.delete(
+    '/:id',
+    jwtUtil.authorizeRoles(['company', 'admin']),
+    async (req: Request & { auth: UserInput }, res: Response, next: NextFunction) => {
+        try {
+            const jobId = Number(req.params.id);
+            if (isNaN(jobId)) throw new Error('Invalid job ID.');
+
+            const userId = Number(req.auth.id);
+            if (isNaN(userId)) throw new Error('Invalid user ID.');
+
+            const company = await companyService.getCompanyByUserId(userId);
+            if (!company) throw new Error('Company not found.');
+
+            // Ensure the job belongs to the company
+            const job = await jobService.getJobById(jobId);
+            if (!job || job.getCompanyId() !== company.getId()) {
+                return res.status(403).json({ message: 'Unauthorized to delete this job.' });
+            }
+
+            // Delete the job
+            await jobService.deleteJob(jobId);
+            res.status(204).send(); // No Content
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
 export { jobRouter };

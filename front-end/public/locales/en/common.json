@@ -99,10 +99,7 @@
         "loadingMessage": "Loading vacancies...",
         "errorMessage": "An error occurred: {{error}}",
         "noVacanciesMessage": "No vacancies found.",
-        "vacancyTitle": "Title",
-        "vacancyLocation": "Location",
-        "vacancySalaryRange": "Salary Range",
-        "vacancyDescription": "Description"
+        "deleteButton": "Delete"
     },
     "header": {
         "login": "Login",

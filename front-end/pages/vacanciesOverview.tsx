@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Header from '@components/header';
-import { fetchVacancies } from '@services/vacancyService';
+import { fetchVacancies, deleteVacancy } from '@services/vacancyService';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
@@ -40,6 +40,23 @@ const VacanciesOverview: React.FC = () => {
         fetchEmployerVacancies();
     }, []);
 
+    const handleDelete = async (vacancyId: string) => {
+        try {
+            const loggedInUser = localStorage.getItem('loggedInUser');
+            if (loggedInUser) {
+                const token = JSON.parse(loggedInUser).token;
+                await deleteVacancy(token, vacancyId);
+
+                // Optimistically update state
+                setVacancies((prevVacancies) =>
+                    prevVacancies.filter((vacancy) => vacancy.id !== vacancyId)
+                );
+            }
+        } catch (err: any) {
+            setError(err.message || 'Failed to delete vacancy');
+        }
+    };
+
     return (
         <div className="min-h-screen bg-gray-100">
             <Header />
@@ -77,6 +94,12 @@ const VacanciesOverview: React.FC = () => {
                                             {vacancy.description}
                                         </p>
                                     </div>
+                                    <button
+                                        onClick={() => handleDelete(vacancy.id)}
+                                        className="bg-red-500 text-white py-1 px-3 rounded-md hover:bg-red-600 transition"
+                                    >
+                                        {t('vacanciesOverviewPage.deleteButton')}
+                                    </button>
                                 </li>
                             ))}
                         </ul>

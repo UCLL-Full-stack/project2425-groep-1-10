@@ -100,6 +100,44 @@ jobRouter.get(
 
 /**
  * @swagger
+ * /jobs/all:
+ *   get:
+ *     security:
+ *       - bearerAuth: []
+ *     summary: Get all jobs in the system (admin only)
+ *     tags:
+ *       - Jobs
+ *     responses:
+ *       200:
+ *         description: List of all jobs.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Job'
+ *       401:
+ *         description: Unauthorized.
+ *       403:
+ *         description: Forbidden.
+ *       500:
+ *         description: Internal server error.
+ */
+jobRouter.get(
+    '/all',
+    jwtUtil.authorizeRoles(['admin']),
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const allJobs = await jobService.getAllJobs();
+            res.status(200).json(allJobs);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+/**
+ * @swagger
  * /jobs/user:
  *   get:
  *     security:

@@ -21,9 +21,12 @@ const Header: React.FC = () => {
             // Redirect company users to employer page if they are not already on employer-related pages
             if (
                 parsedUser.role === 'company' &&
-                !['/employerApplications', '/vacancyUpload', '/vacanciesOverview'].includes(
-                    router.pathname
-                )
+                ![
+                    '/employerApplications',
+                    '/vacancyUpload',
+                    '/vacanciesOverview',
+                    '/editProfile',
+                ].includes(router.pathname)
             ) {
                 router.push('/employerApplications');
             }
@@ -137,8 +140,16 @@ const Header: React.FC = () => {
                         </Link>
                     ) : (
                         <>
-                            <div className="text-white ms-5 mt-2 md:mt-0 pt-1 md:pt-0 grow">
-                                {t('header.welcome')}, {loggedInUser.fullname}!
+                            <div className="text-white ms-5 mt-2 md:mt-0 pt-1 md:pt-0 grow flex items-center space-x-4">
+                                <span>
+                                    {t('header.welcome')}, {loggedInUser.fullname}!
+                                </span>
+                                <Link
+                                    href="/editProfile"
+                                    className="text-white text-xl font-semibold relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-transform after:duration-300 hover:after:w-full"
+                                >
+                                    {t('header.editProfile')}
+                                </Link>
                             </div>
                             <a
                                 href="/"

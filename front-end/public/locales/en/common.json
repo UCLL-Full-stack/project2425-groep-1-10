@@ -113,10 +113,23 @@
         "yes": "Yes",
         "no": "No"
     },
+    "editProfilePage": {
+        "title": "Edit Profile",
+        "metaDescription": "Update your profile information.",
+        "heading": "Edit Your Profile",
+        "bioLabel": "Bio",
+        "skillsLabel": "Skills",
+        "skillsPlaceholder": "e.g., JavaScript, React, Node.js",
+        "resumeUrlLabel": "Resume URL",
+        "buttonText": "Save Changes",
+        "successMessage": "Profile updated successfully!",
+        "failed": "Failed to update profile. Please try again."
+    },
     "header": {
         "login": "Login",
         "logout": "Logout",
-        "welcome": "Welcome"
+        "welcome": "Welcome",
+        "editProfile": "Edit Profile"
     },
     "messages": {
         "applicationConfirmed": "Application confirmed!",

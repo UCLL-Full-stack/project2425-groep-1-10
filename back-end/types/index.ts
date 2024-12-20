@@ -1,4 +1,5 @@
 type Role = 'admin' | 'company' | 'user';
+type ApplicationStatus = 'pending' | 'approved' | 'rejected';
 
 type UserInput = {
     id?: number;
@@ -16,4 +17,4 @@ type AuthenticationResponse = {
     role: string;
 };
 
-export { Role, UserInput, AuthenticationResponse };
+export { Role, ApplicationStatus, UserInput, AuthenticationResponse };

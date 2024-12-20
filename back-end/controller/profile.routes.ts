@@ -186,12 +186,33 @@ profileRouter.get(
  */
 profileRouter.post(
     '/',
-    jwtUtil.authorizeRoles(['admin']),
-    async (req: Request, res: Response, next: NextFunction) => {
+    jwtUtil.authorizeRoles(['user', 'company', 'admin']),
+    async (req: Request & { auth: UserInput }, res: Response, next: NextFunction) => {
         try {
-            const profileData = req.body;
+            const userId = Number(req.auth.id);
+            if (isNaN(userId)) throw new Error('Invalid user ID.');
+
+            const profileData = { ...req.body, userId };
             const newProfile = await profileService.createProfile(profileData);
             res.status(201).json(newProfile);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+profileRouter.put(
+    '/',
+    jwtUtil.authorizeRoles(['user', 'company', 'admin']),
+    async (req: Request & { auth: UserInput }, res: Response, next: NextFunction) => {
+        try {
+            const userId = Number(req.auth.id);
+            if (isNaN(userId)) throw new Error('Invalid user ID.');
+
+            let profile = await profileService.getProfileByUserId(userId);
+            profile = await profileService.updateProfile(profile.getId(), req.body);
+
+            res.status(201).json(profile);
         } catch (error) {
             next(error);
         }

@@ -78,7 +78,8 @@ const Register: React.FC = () => {
                 console.log(`Company "${companyName}" created successfully!`);
             }
 
-            router.push('/');
+            // Redirect to the edit profile page
+            router.push('/editProfile');
         } catch (error: any) {
             const errorMessage =
                 error.response?.data?.message || error.message || t('registerPage.failed');

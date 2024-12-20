@@ -35,14 +35,19 @@
     "JobTitle": "Job Title",
     "ApplicationDate": "Application Date",
     "ApplicationStatus": "Application Status",
-    "employerPage": {
-        "title": "Employer Dashboard",
-        "metaDescription": "View all job applications received",
-        "heading": "Job Applications",
-        "company": "Company",
-        "applicantName": "Applicant Name",
-        "applicantEmail": "Applicant Email",
-        "noApplications": "No job applications yet."
+    "applications": {
+        "title": "Job Applications",
+        "metaDescription": "Manage applications for jobs posted by your company.",
+        "heading": "Pending Applications",
+        "loading": "Loading applications...",
+        "noApplications": "No pending applications at the moment.",
+        "jobTitle": "Job Title",
+        "candidate": "Candidate",
+        "date": "Application Date",
+        "actions": "Actions",
+        "accept": "Accept",
+        "deny": "Deny",
+        "noTitle": "No Title Available"
     },
     "loginPage": {
         "title": "Login",

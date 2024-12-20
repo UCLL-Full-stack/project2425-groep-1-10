@@ -17,6 +17,21 @@ const getApplicationsByUserId = async (userId: number): Promise<Application[] | 
     return prismaApplications.map((application) => Application.from(application));
 };
 
+const getApplicationsByCompanyId = async (companyId: number) => {
+    return await database.application.findMany({
+        where: {
+            job: {
+                companyId,
+            },
+            status: 'pending' as ApplicationStatus,
+        },
+        include: {
+            user: true,
+            job: true,
+        },
+    });
+};
+
 const createApplication = async (application: Application): Promise<Application> => {
     const prismaApplication = await database.application.create({
         data: {
@@ -47,6 +62,7 @@ export default {
     getAllApplications,
     getApplicationById,
     getApplicationsByUserId,
+    getApplicationsByCompanyId,
     createApplication,
     updateApplication,
     deleteApplication,

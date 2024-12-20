@@ -22,6 +22,26 @@ applicationRouter.get(
     }
 );
 
+applicationRouter.get(
+    '/employer',
+    jwtUtil.authorizeRoles(['company']),
+    async (req: Request & { auth: UserInput }, res: Response, next: NextFunction) => {
+        try {
+            const userId = Number(req.auth.id);
+            if (isNaN(userId)) throw new Error('Invalid company ID.');
+
+            const company = await companyService.getCompanyByUserId(userId);
+
+            const companyApplications = await applicationService.getApplicationsByCompanyId(
+                company.getId()
+            );
+            res.status(200).json(companyApplications);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
 applicationRouter.post(
     '/apply',
     async (req: Request & { auth: UserInput }, res: Response, next: NextFunction) => {
@@ -37,6 +57,29 @@ applicationRouter.post(
             });
 
             res.status(201).json(newApplication);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+applicationRouter.patch(
+    '/:id',
+    jwtUtil.authorizeRoles(['company']),
+    async (req: Request & { auth: UserInput }, res: Response, next: NextFunction) => {
+        try {
+            const companyId = Number(req.auth.id);
+            if (isNaN(companyId)) throw new Error('Invalid company ID.');
+
+            const { id } = req.params;
+            const { status } = req.body;
+
+            const updatedApplication = await applicationService.updateApplicationStatus(
+                Number(id),
+                status
+            );
+
+            res.status(200).json(updatedApplication);
         } catch (error) {
             next(error);
         }

@@ -16,6 +16,10 @@ const getApplicationsByUserId = async (userId: number): Promise<Application[]> =
     return applicationDB.getApplicationsByUserId(userId);
 };
 
+const getApplicationsByCompanyId = async (companyId: number) => {
+    return applicationDB.getApplicationsByCompanyId(companyId);
+};
+
 const createApplication = async ({
     userId,
     jobId,
@@ -42,6 +46,7 @@ export default {
     getAllApplications,
     getApplicationById,
     getApplicationsByUserId,
+    getApplicationsByCompanyId,
     createApplication,
     updateApplicationStatus,
     deleteApplication,

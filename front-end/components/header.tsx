@@ -21,12 +21,9 @@ const Header: React.FC = () => {
             // Redirect company users to employer page if they are not already on employer-related pages
             if (
                 parsedUser.role === 'company' &&
-                ![
-                    '/employerApplications',
-                    '/vacancyUpload',
-                    '/vacanciesOverview',
-                    '/editProfile',
-                ].includes(router.pathname)
+                !['/employerApplications', '/vacancyUpload', '/vacanciesOverview'].includes(
+                    router.pathname
+                )
             ) {
                 router.push('/employerApplications');
             }
@@ -138,12 +135,14 @@ const Header: React.FC = () => {
                                 <span>
                                     {t('header.welcome')}, {loggedInUser.fullname}!
                                 </span>
-                                <Link
-                                    href="/editProfile"
-                                    className="text-white text-xl font-semibold relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-transform after:duration-300 hover:after:w-full"
-                                >
-                                    {t('header.editProfile')}
-                                </Link>
+                                {userRole === 'user' && (
+                                    <Link
+                                        href="/editProfile"
+                                        className="text-white text-xl font-semibold relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-transform after:duration-300 hover:after:w-full"
+                                    >
+                                        {t('header.editProfile')}
+                                    </Link>
+                                )}
                             </div>
                             <a
                                 href="/"

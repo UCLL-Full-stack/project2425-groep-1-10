@@ -1,17 +1,17 @@
 {
     "app": {
         "title": "Shifter",
-        "description": "Kies een dienst die je wilt en wacht tot je wordt aangenomen!",
+        "description": "Kies een shift die je wilt en wacht tot je wordt aangenomen!",
         "logoAlt": "Shifter Logo"
     },
     "home": "Home",
     "headerVacancies": "Vacatures",
     "vacancies": {
         "title": "Vacatures",
-        "metaDescription": "Blader en solliciteer op vacatures die passen bij je vaardigheden.",
+        "metaDescription": "Bekijk en solliciteer op vacatures die aansluiten bij jouw vaardigheden.",
         "heading": "Beschikbare Vacatures",
         "loading": "Vacatures laden...",
-        "noVacancies": "Er zijn momenteel geen vacatures die bij je vaardigheden passen.",
+        "noVacancies": "Er zijn momenteel geen vacatures die bij jouw vaardigheden passen.",
         "applyNow": "Solliciteer Nu",
         "companyLogo": "Bedrijfslogo",
         "confirmApplication": "Weet je zeker dat je wilt solliciteren voor de functie: {{vacancy}}?",
@@ -23,24 +23,24 @@
     "login": "Inloggen",
     "register": "Registreren",
     "welcome": "Welkom bij Shifter!",
-    "getStartedButton": "Aan de slag",
-    "descriptionExtended": "Kies de dienst die het beste bij je past en laat Shifter de rest doen.",
+    "getStartedButton": "Begin Nu",
+    "descriptionExtended": "Kies de shift die het beste bij je past en laat Shifter de rest doen.",
     "progressPage": {
-        "title": "Sollicitatie Voortgang",
-        "metaDescription": "Volg de voortgang van je sollicitaties.",
+        "title": "Voortgang van Sollicitaties",
+        "metaDescription": "Volg de voortgang van jouw sollicitaties.",
         "heading": "Jouw Sollicitaties",
-        "loading": "Je sollicitaties laden...",
-        "noApplications": "Je hebt nog niet gesolliciteerd op banen."
+        "loading": "Jouw sollicitaties laden...",
+        "noApplications": "Je hebt nog niet gesolliciteerd."
     },
     "JobTitle": "Functietitel",
-    "ApplicationDate": "Sollicitatiedatum",
+    "ApplicationDate": "Datum van Sollicitatie",
     "ApplicationStatus": "Status van Sollicitatie",
     "applications": {
         "title": "Sollicitaties",
-        "metaDescription": "Beheer sollicitaties voor vacatures die door je bedrijf zijn geplaatst.",
-        "heading": "In Behandeling Zijnde Sollicitaties",
+        "metaDescription": "Beheer sollicitaties voor jouw vacatures.",
+        "heading": "Openstaande Sollicitaties",
         "loading": "Sollicitaties laden...",
-        "noApplications": "Er zijn momenteel geen sollicitaties in behandeling.",
+        "noApplications": "Er zijn momenteel geen openstaande sollicitaties.",
         "jobTitle": "Functietitel",
         "candidate": "Kandidaat",
         "date": "Sollicitatiedatum",
@@ -52,17 +52,26 @@
         "yes": "Ja",
         "no": "Nee"
     },
+    "allCompaniesPage": {
+        "title": "Bedrijven Overzicht",
+        "metaDescription": "Bekijk en beheer alle bedrijven.",
+        "noCompanies": "Geen bedrijven gevonden.",
+        "deleteButton": "Verwijderen",
+        "confirmDelete": "Weet je zeker dat je het bedrijf '{{company}}' wilt verwijderen?",
+        "noWebsite": "Geen website beschikbaar.",
+        "createdAt": "Gemaakt op {{date}}"
+    },
     "loginPage": {
         "title": "Inloggen",
         "heading": "Log in op je account",
-        "emailLabel": "E-mail",
+        "emailLabel": "E-mailadres",
         "passwordLabel": "Wachtwoord",
         "buttonText": "Inloggen",
         "noAccount": "Nog geen account?",
-        "registerLink": "Registreer",
+        "registerLink": "Registreren",
         "usersTable": {
             "heading": "Gebruikers",
-            "email": "E-mail",
+            "email": "E-mailadres",
             "password": "Wachtwoord",
             "role": "Rol",
             "roles": {
@@ -72,11 +81,15 @@
             }
         }
     },
+    "adminHeader": {
+        "vacancies": "Vacatures",
+        "companies": "Bedrijven"
+    },
     "registerPage": {
         "title": "Registreren",
         "metaDescription": "Registreer een nieuw account",
         "heading": "Registreren",
-        "emailLabel": "E-mail",
+        "emailLabel": "E-mailadres",
         "firstNameLabel": "Voornaam",
         "lastNameLabel": "Achternaam",
         "dobLabel": "Geboortedatum",
@@ -84,12 +97,12 @@
         "confirmPasswordLabel": "Bevestig Wachtwoord",
         "passwordMismatch": "Wachtwoorden komen niet overeen",
         "buttonText": "Registreren",
-        "success": "Registratie succesvol",
+        "success": "Registratie geslaagd",
         "failed": "Registratie mislukt",
         "alreadyHaveAccount": "Heb je al een account?",
         "loginLink": "Inloggen",
-        "userTab": "Registreer als gebruiker",
-        "companyTab": "Registreer als bedrijf",
+        "userTab": "Registreren als gebruiker",
+        "companyTab": "Registreren als bedrijf",
         "companyNameLabel": "Bedrijfsnaam",
         "companyDescriptionLabel": "Bedrijfsomschrijving",
         "websiteUrlLabel": "Website URL"
@@ -100,19 +113,19 @@
         "successMessage": "Vacature succesvol geplaatst!",
         "vacancyTitleLabel": "Vacaturetitel",
         "vacancyTitlePlaceholder": "Voer de titel van de vacature in",
-        "descriptionLabel": "Beschrijving",
+        "descriptionLabel": "Omschrijving",
         "descriptionPlaceholder": "Beschrijf de vacature",
         "requirementsLabel": "Eisen",
         "requirementsPlaceholder": "Vermeld de eisen voor deze vacature",
-        "salaryRangeLabel": "Salarisrange",
-        "salaryRangePlaceholder": "Voer de salarisrange in (bijv. €50.000 - €70.000)",
+        "salaryRangeLabel": "Salarisbereik",
+        "salaryRangePlaceholder": "Voer het salarisbereik in (bijv. €50.000 - €70.000)",
         "locationLabel": "Locatie",
         "locationPlaceholder": "Voer de locatie van de vacature in",
         "submitButton": "Vacature Indienen",
-        "loadingButton": "Bezig met uploaden..."
+        "loadingButton": "Uploaden..."
     },
     "vacanciesOverviewPage": {
-        "title": "Vacature Overzicht",
+        "title": "Overzicht Vacatures",
         "loadingMessage": "Vacatures laden...",
         "errorMessage": "Er is een fout opgetreden: {{error}}",
         "noVacanciesMessage": "Er zijn momenteel geen vacatures beschikbaar.",
@@ -131,7 +144,7 @@
         "resumeUrlLabel": "CV URL",
         "buttonText": "Wijzigingen Opslaan",
         "successMessage": "Profiel succesvol bijgewerkt!",
-        "failed": "Profiel bijwerken mislukt. Probeer het opnieuw."
+        "failed": "Bijwerken van profiel mislukt. Probeer het opnieuw."
     },
     "header": {
         "login": "Inloggen",
@@ -141,7 +154,7 @@
     },
     "messages": {
         "applicationConfirmed": "Sollicitatie bevestigd!",
-        "applicationFailed": "Sollicitatie mislukt.",
+        "applicationFailed": "Kan niet solliciteren voor de vacature.",
         "errorLoadingVacancies": "Er is een fout opgetreden bij het laden van vacatures."
     }
 }

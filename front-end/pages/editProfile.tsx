@@ -30,7 +30,14 @@ const EditProfile: React.FC = () => {
                         return;
                     }
 
-                    // Fetch profile
+                    // Redirect if the role is not "user"
+                    if (decodedToken.role !== 'user') {
+                        console.warn('Unauthorized access to edit profile page.');
+                        router.push('/');
+                        return;
+                    }
+
+                    // Fetch or create the user's profile
                     try {
                         const profile = await fetchProfile(token);
                         setBio(profile.bio || '');

@@ -68,19 +68,13 @@ const Header: React.FC = () => {
                                     href="/allVacancies"
                                     className="text-white text-xl font-semibold relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-transform after:duration-300 hover:after:w-full"
                                 >
-                                    {t('headerVacancies')}
+                                    {t('adminHeader.vacancies')}
                                 </Link>
                                 <Link
-                                    href="/progress"
+                                    href="/allCompanies"
                                     className="text-white text-xl font-semibold relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-transform after:duration-300 hover:after:w-full"
                                 >
-                                    {t('progress')}
-                                </Link>
-                                <Link
-                                    href="/employerApplications"
-                                    className="text-white text-xl font-semibold relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-transform after:duration-300 hover:after:w-full"
-                                >
-                                    {t('employer')}
+                                    {t('adminHeader.companies')}
                                 </Link>
                             </>
                         )}

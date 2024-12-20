@@ -349,11 +349,21 @@ jobRouter.delete(
             const userId = Number(req.auth.id);
             if (isNaN(userId)) throw new Error('Invalid user ID.');
 
-            const company = await companyService.getCompanyByUserId(userId);
-            if (!company) throw new Error('Company not found.');
-
             const job = await jobService.getJobById(jobId);
-            if (!job || job.getCompanyId() !== company.getId()) {
+            if (!job) {
+                return res.status(404).json({ message: 'Job not found.' });
+            }
+
+            if (req.auth.role === 'admin') {
+                // Admin can delete any job
+                await jobService.deleteApplicationsByJobId(jobId);
+                await jobService.deleteJob(jobId);
+                return res.status(204).send();
+            }
+
+            // For company users, ensure the job belongs to their company
+            const company = await companyService.getCompanyByUserId(userId);
+            if (!company || job.getCompanyId() !== company.getId()) {
                 return res.status(403).json({ message: 'Unauthorized to delete this job.' });
             }
 

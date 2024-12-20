@@ -107,6 +107,10 @@ const deleteApplicationsByJobId = async (jobId: number): Promise<void> => {
     await database.application.deleteMany({ where: { jobId } });
 };
 
+const deleteJobsByCompanyId = async (companyId: number): Promise<void> => {
+    await database.job.deleteMany({ where: { companyId } });
+};
+
 export default {
     getAllJobs,
     getJobsByCompanyId,
@@ -118,4 +122,5 @@ export default {
     updateJob,
     deleteJob,
     deleteApplicationsByJobId,
+    deleteJobsByCompanyId,
 };

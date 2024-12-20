@@ -110,6 +110,60 @@ applicationRouter.get(
 
 /**
  * @swagger
+ * /applications/job/{jobId}:
+ *   get:
+ *     security:
+ *       - bearerAuth: []
+ *     summary: Get all applications for a specific job ID (admin only)
+ *     tags:
+ *       - Applications
+ *     parameters:
+ *       - in: path
+ *         name: jobId
+ *         required: true
+ *         schema:
+ *           type: number
+ *         description: Job ID
+ *     responses:
+ *       200:
+ *         description: List of applications for the specified job.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Application'
+ *       401:
+ *         description: Unauthorized.
+ *       403:
+ *         description: Forbidden.
+ *       404:
+ *         description: Job not found.
+ *       500:
+ *         description: Internal server error.
+ */
+applicationRouter.get(
+    '/job/:jobId',
+    jwtUtil.authorizeRoles(['admin']),
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const jobId = Number(req.params.jobId);
+            if (isNaN(jobId)) throw new Error('Invalid job ID.');
+
+            const applications = await applicationService.getApplicationsByJobId(jobId);
+            if (!applications) {
+                return res.status(404).json({ error: 'No applications found for this job.' });
+            }
+
+            res.status(200).json(applications);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+/**
+ * @swagger
  * /applications/employer:
  *   get:
  *     security:

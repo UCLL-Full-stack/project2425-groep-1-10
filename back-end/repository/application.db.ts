@@ -42,6 +42,23 @@ const getApplicationsByCompanyId = async (companyId: number) => {
     });
 };
 
+const getApplicationsByJobId = async (jobId: number) => {
+    return await database.application.findMany({
+        where: {
+            jobId,
+        },
+        include: {
+            user: {
+                select: {
+                    firstName: true,
+                    lastName: true,
+                    email: true,
+                },
+            },
+        },
+    });
+};
+
 const createApplication = async (application: Application): Promise<Application> => {
     const prismaApplication = await database.application.create({
         data: {
@@ -68,12 +85,18 @@ const deleteApplication = async (id: number): Promise<void> => {
     await database.application.delete({ where: { id } });
 };
 
+const deleteApplicationsByJobId = async (jobId: number): Promise<void> => {
+    await database.application.deleteMany({ where: { jobId } });
+};
+
 export default {
     getAllApplications,
     getApplicationById,
     getApplicationsByUserId,
     getApplicationsByCompanyId,
+    getApplicationsByJobId,
     createApplication,
     updateApplication,
     deleteApplication,
+    deleteApplicationsByJobId,
 };

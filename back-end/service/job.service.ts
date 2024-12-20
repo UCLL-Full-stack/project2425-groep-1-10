@@ -78,6 +78,10 @@ const deleteApplicationsByJobId = async (jobId: number): Promise<void> => {
     await jobDB.deleteApplicationsByJobId(jobId);
 };
 
+const deleteJobsByCompanyId = async (companyId: number): Promise<void> => {
+    await jobDB.deleteJobsByCompanyId(companyId);
+};
+
 export default {
     getAllJobs,
     getJobsByCompanyId,
@@ -89,4 +93,5 @@ export default {
     updateJob,
     deleteJob,
     deleteApplicationsByJobId,
+    deleteJobsByCompanyId,
 };

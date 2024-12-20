@@ -52,6 +52,15 @@
         "yes": "Yes",
         "no": "No"
     },
+    "allCompaniesPage": {
+        "title": "Company Overview",
+        "metaDescription": "View and manage all companies.",
+        "noCompanies": "No companies found.",
+        "deleteButton": "Delete",
+        "confirmDelete": "Are you sure you want to delete the company '{{company}}'?",
+        "noWebsite": "No website available.",
+        "createdAt": "Created on {{date}}"
+    },
     "loginPage": {
         "title": "Login",
         "heading": "Login to your account",
@@ -71,6 +80,10 @@
                 "company": "Company"
             }
         }
+    },
+    "adminHeader": {
+        "vacancies": "Vacancies",
+        "companies": "Companies"
     },
     "registerPage": {
         "title": "Register",

@@ -59,6 +59,8 @@ import express, { NextFunction, Request, Response } from 'express';
 import jwtUtil from '../util/jwt';
 import companyService from '../service/company.service';
 import { UserInput } from '../types';
+import jobService from '../service/job.service';
+import applicationService from '../service/application.service';
 
 const companyRouter = express.Router();
 
@@ -311,7 +313,20 @@ companyRouter.delete(
     async (req: Request, res: Response, next: NextFunction) => {
         try {
             const companyId = Number(req.params.id);
+            if (isNaN(companyId)) throw new Error('Invalid company ID.');
+
+            // Delete all applications related to jobs posted by this company
+            const jobs = await jobService.getJobsByCompanyId(companyId);
+            for (const job of jobs) {
+                await applicationService.deleteApplicationsByJobId(job.getId());
+            }
+
+            // Delete all jobs posted by this company
+            await jobService.deleteJobsByCompanyId(companyId);
+
+            // Finally, delete the company
             await companyService.deleteCompany(companyId);
+
             res.status(204).send();
         } catch (error) {
             next(error);

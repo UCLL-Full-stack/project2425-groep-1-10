@@ -20,6 +20,10 @@ const getApplicationsByCompanyId = async (companyId: number) => {
     return applicationDB.getApplicationsByCompanyId(companyId);
 };
 
+const getApplicationsByJobId = async (jobId: number) => {
+    return applicationDB.getApplicationsByJobId(jobId);
+};
+
 const createApplication = async ({
     userId,
     jobId,
@@ -42,12 +46,18 @@ const deleteApplication = async (id: number): Promise<void> => {
     await applicationDB.deleteApplication(id);
 };
 
+const deleteApplicationsByJobId = async (jobId: number): Promise<void> => {
+    await applicationDB.deleteApplicationsByJobId(jobId);
+};
+
 export default {
     getAllApplications,
     getApplicationById,
     getApplicationsByUserId,
     getApplicationsByCompanyId,
+    getApplicationsByJobId,
     createApplication,
     updateApplicationStatus,
     deleteApplication,
+    deleteApplicationsByJobId,
 };

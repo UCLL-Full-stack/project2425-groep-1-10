@@ -17,6 +17,11 @@ const VacanciesOverview: React.FC = () => {
     const [vacancies, setVacancies] = useState<Vacancy[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [showPopup, setShowPopup] = useState(false);
+    const [popupData, setPopupData] = useState<{ vacancyId: string; vacancyTitle: string }>({
+        vacancyId: '',
+        vacancyTitle: '',
+    });
 
     useEffect(() => {
         const fetchEmployerVacancies = async () => {
@@ -40,20 +45,27 @@ const VacanciesOverview: React.FC = () => {
         fetchEmployerVacancies();
     }, []);
 
-    const handleDelete = async (vacancyId: string) => {
+    const handleDeleteClick = (vacancyId: string, vacancyTitle: string) => {
+        setPopupData({ vacancyId, vacancyTitle });
+        setShowPopup(true);
+    };
+
+    const confirmDelete = async () => {
         try {
             const loggedInUser = localStorage.getItem('loggedInUser');
             if (loggedInUser) {
                 const token = JSON.parse(loggedInUser).token;
-                await deleteVacancy(token, vacancyId);
+                await deleteVacancy(token, popupData.vacancyId);
 
                 // Optimistically update state
                 setVacancies((prevVacancies) =>
-                    prevVacancies.filter((vacancy) => vacancy.id !== vacancyId)
+                    prevVacancies.filter((vacancy) => vacancy.id !== popupData.vacancyId)
                 );
             }
         } catch (err: any) {
             setError(err.message || 'Failed to delete vacancy');
+        } finally {
+            setShowPopup(false);
         }
     };
 
@@ -95,7 +107,7 @@ const VacanciesOverview: React.FC = () => {
                                         </p>
                                     </div>
                                     <button
-                                        onClick={() => handleDelete(vacancy.id)}
+                                        onClick={() => handleDeleteClick(vacancy.id, vacancy.title)}
                                         className="bg-red-500 text-white py-1 px-3 rounded-md hover:bg-red-600 transition"
                                     >
                                         {t('vacanciesOverviewPage.deleteButton')}
@@ -110,6 +122,30 @@ const VacanciesOverview: React.FC = () => {
                     )}
                 </div>
             </div>
+
+            {showPopup && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+                        <p className="text-lg mb-4">
+                            {t('vacanciesOverviewPage.confirmDelete', {
+                                vacancy: popupData.vacancyTitle,
+                            })}
+                        </p>
+                        <button
+                            onClick={confirmDelete}
+                            className="bg-green-500 text-white px-4 py-2 rounded mr-4 hover:bg-green-600"
+                        >
+                            {t('vacanciesOverviewPage.yes')}
+                        </button>
+                        <button
+                            onClick={() => setShowPopup(false)}
+                            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                        >
+                            {t('vacanciesOverviewPage.no')}
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

@@ -104,11 +104,14 @@
         "loadingButton": "Uploading..."
     },
     "vacanciesOverviewPage": {
-        "title": "Your Vacancies",
+        "title": "Vacancies Overview",
         "loadingMessage": "Loading vacancies...",
         "errorMessage": "An error occurred: {{error}}",
-        "noVacanciesMessage": "No vacancies found.",
-        "deleteButton": "Delete"
+        "noVacanciesMessage": "No vacancies available at the moment.",
+        "deleteButton": "Delete",
+        "confirmDelete": "Are you sure you want to delete the vacancy '{{vacancy}}'?",
+        "yes": "Yes",
+        "no": "No"
     },
     "header": {
         "login": "Login",

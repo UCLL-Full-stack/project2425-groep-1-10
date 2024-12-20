@@ -6,6 +6,22 @@ import applicationService from '../service/application.service';
 
 const applicationRouter = express.Router();
 
+applicationRouter.get(
+    '/',
+    jwtUtil.authorizeRoles(['user', 'company', 'admin']),
+    async (req: Request & { auth: UserInput }, res: Response, next: NextFunction) => {
+        try {
+            const userId = Number(req.auth.id);
+            if (isNaN(userId)) throw new Error('Invalid user ID.');
+
+            const userApplications = await applicationService.getApplicationsByUserId(userId);
+            res.status(200).json(userApplications);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
 applicationRouter.post(
     '/apply',
     async (req: Request & { auth: UserInput }, res: Response, next: NextFunction) => {

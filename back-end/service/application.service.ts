@@ -12,6 +12,10 @@ const getApplicationById = async (id: number): Promise<Application> => {
     return application;
 };
 
+const getApplicationsByUserId = async (userId: number): Promise<Application[]> => {
+    return applicationDB.getApplicationsByUserId(userId);
+};
+
 const createApplication = async ({
     userId,
     jobId,
@@ -37,6 +41,7 @@ const deleteApplication = async (id: number): Promise<void> => {
 export default {
     getAllApplications,
     getApplicationById,
+    getApplicationsByUserId,
     createApplication,
     updateApplicationStatus,
     deleteApplication,

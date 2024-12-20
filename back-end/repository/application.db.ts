@@ -12,6 +12,11 @@ const getApplicationById = async (id: number): Promise<Application | null> => {
     return prismaApplication ? Application.from(prismaApplication) : null;
 };
 
+const getApplicationsByUserId = async (userId: number): Promise<Application[] | null> => {
+    const prismaApplications = await database.application.findMany({ where: { userId } });
+    return prismaApplications.map((application) => Application.from(application));
+};
+
 const createApplication = async (application: Application): Promise<Application> => {
     const prismaApplication = await database.application.create({
         data: {
@@ -41,6 +46,7 @@ const deleteApplication = async (id: number): Promise<void> => {
 export default {
     getAllApplications,
     getApplicationById,
+    getApplicationsByUserId,
     createApplication,
     updateApplication,
     deleteApplication,

@@ -44,6 +44,22 @@ jobRouter.get(
     }
 );
 
+jobRouter.get(
+    '/:id',
+    jwtUtil.authorizeRoles(['user', 'company', 'admin']),
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const jobId = Number(req.params.id);
+            if (isNaN(jobId)) throw new Error('Invalid job ID.');
+
+            const job = await jobService.getJobById(jobId);
+            res.status(200).json(job);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
 jobRouter.post(
     '/',
     jwtUtil.authorizeRoles(['company', 'admin']),

@@ -1,8 +1,14 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/twPj_hbU)
-# Project template
+## Installation
 
-To get started, open the Readme.md files in the analysis, back-end and front-end folders.
+To install the application, run the following command in your terminal:
 
-Change this readme file to describe your project, change the title and fill in your name below.
+```bash
+cd front-end && npm install && cd ../back-end && npm install && npx prisma generate && npx prisma migrate dev --name init && npx ts-node util/seed.ts
+```
 
-### \<Student 1 name\> / \<Student 2 name\>
+To run the application use the following commands in separate terminal windows:
+
+```bash
+cd back-end && npm start
+cd front-end && npm start
+```

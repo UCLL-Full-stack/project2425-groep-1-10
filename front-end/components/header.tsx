@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 import Image from 'next/image';
 import Language from '@components/language/language';
 import { useTranslation } from 'next-i18next';
@@ -8,15 +8,31 @@ import { useTranslation } from 'next-i18next';
 const Header: React.FC = () => {
     const { t } = useTranslation('common');
     const [loggedInUser, setLoggedInUser] = useState<any>(null);
+    const [userRole, setUserRole] = useState<string | null>(null);
+    const router = useRouter();
 
     useEffect(() => {
         const user = localStorage.getItem('loggedInUser');
-        setLoggedInUser(user ? JSON.parse(user) : null);
-    }, []);
+        if (user) {
+            const parsedUser = JSON.parse(user);
+            setLoggedInUser(parsedUser);
+            setUserRole(parsedUser.role);
+
+            // Redirect company users to the employer page
+            if (parsedUser.role === 'company' && router.pathname !== '/employer') {
+                router.push('/employer');
+            }
+        } else {
+            setLoggedInUser(null);
+            setUserRole(null);
+        }
+    }, [router]);
 
     const handleClick = () => {
         localStorage.removeItem('loggedInUser');
         setLoggedInUser(null);
+        setUserRole(null);
+        router.push('/'); // Redirect to home on logout
     };
 
     return (
@@ -32,18 +48,27 @@ const Header: React.FC = () => {
                         className="rounded-full shadow-md mb-4"
                     />
                     <div className="flex space-x-8">
-                        <Link href="/" className="text-white text-xl font-semibold">
-                            {t('home')}
-                        </Link>
-                        <Link href="/vacancies" className="text-white text-xl font-semibold">
-                            {t('headerVacancies')}
-                        </Link>
-                        <Link href="/progress" className="text-white text-xl font-semibold">
-                            {t('progress')}
-                        </Link>
-                        <Link href="/employer" className="text-white text-xl font-semibold">
-                            {t('employer')}
-                        </Link>
+                        {userRole === 'user' && (
+                            <>
+                                <Link href="/" className="text-white text-xl font-semibold">
+                                    {t('home')}
+                                </Link>
+                                <Link
+                                    href="/vacancies"
+                                    className="text-white text-xl font-semibold"
+                                >
+                                    {t('headerVacancies')}
+                                </Link>
+                                <Link href="/progress" className="text-white text-xl font-semibold">
+                                    {t('progress')}
+                                </Link>
+                            </>
+                        )}
+                        {userRole === 'company' && (
+                            <Link href="/employer" className="text-white text-xl font-semibold">
+                                {t('employer')}
+                            </Link>
+                        )}
                     </div>
                 </div>
                 <div className="absolute top-5 right-5 list-none flex space-x-8 font-semibold text-xl text-white">

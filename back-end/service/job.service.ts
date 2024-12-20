@@ -15,22 +15,22 @@ const createJob = async ({
     title,
     description,
     requirements,
-    salaryRange,
     location,
+    salaryRange,
     companyId,
 }: {
     title: string;
     description: string;
     requirements: string[];
-    salaryRange?: string;
     location: string;
+    salaryRange?: string;
     companyId: number;
 }): Promise<Job> => {
     const newJob = new Job({
         title,
         description,
-        requirements,
         salaryRange,
+        requirements,
         location,
         companyId,
     });
@@ -44,8 +44,8 @@ const updateJob = async (
         title: string;
         description: string;
         requirements: string[];
-        salaryRange?: string;
         location: string;
+        salaryRange?: string;
     }>
 ): Promise<Job> => {
     return jobDB.updateJob(id, data);

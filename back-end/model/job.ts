@@ -5,8 +5,8 @@ export class Job {
     private title: string;
     private description: string;
     private requirements: string[];
-    private salaryRange?: string;
     private location: string;
+    private salaryRange?: string;
     private companyId: number;
     private createdAt: Date;
     private updatedAt: Date;
@@ -16,8 +16,8 @@ export class Job {
         title: string;
         description: string;
         requirements: string[];
-        salaryRange?: string;
         location: string;
+        salaryRange?: string;
         companyId: number;
         createdAt?: Date;
         updatedAt?: Date;
@@ -28,8 +28,9 @@ export class Job {
         this.title = job.title;
         this.description = job.description;
         this.requirements = job.requirements;
-        this.salaryRange = job.salaryRange;
+
         this.location = job.location;
+        this.salaryRange = job.salaryRange;
         this.companyId = job.companyId;
         this.createdAt = job.createdAt || new Date();
         this.updatedAt = job.updatedAt || new Date();
@@ -51,12 +52,12 @@ export class Job {
         return this.requirements;
     }
 
-    getSalaryRange(): string | undefined {
-        return this.salaryRange;
-    }
-
     getLocation(): string {
         return this.location;
+    }
+
+    getSalaryRange(): string | undefined {
+        return this.salaryRange;
     }
 
     getCompanyId(): number {
@@ -107,8 +108,8 @@ export class Job {
             title: prismaJob.title,
             description: prismaJob.description,
             requirements: prismaJob.requirements,
-            salaryRange: prismaJob.salaryRange || undefined,
             location: prismaJob.location,
+            salaryRange: prismaJob.salaryRange || undefined,
             companyId: prismaJob.companyId,
             createdAt: prismaJob.createdAt,
             updatedAt: prismaJob.updatedAt,

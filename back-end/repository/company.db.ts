@@ -11,9 +11,9 @@ const getCompanyById = async (id: number): Promise<Company | null> => {
     return prismaCompany ? Company.from(prismaCompany) : null;
 };
 
-const getCompanyByUserId = async (userId: number): Promise<Company[]> => {
-    const prismaCompanies = await database.company.findMany({ where: { createdBy: userId } });
-    return prismaCompanies.map((company) => Company.from(company));
+const getCompanyByUserId = async (userId: number): Promise<Company> => {
+    const prismaCompany = await database.company.findUnique({ where: { createdBy: userId } });
+    return prismaCompany ? Company.from(prismaCompany) : null;
 };
 
 const createCompany = async (company: Company): Promise<Company> => {

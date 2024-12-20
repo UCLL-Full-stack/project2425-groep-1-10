@@ -77,6 +77,23 @@
         "companyDescriptionLabel": "Company Description",
         "websiteUrlLabel": "Website URL"
     },
+    "vacancyUploadPage": {
+        "uploadVacancyTitle": "Upload a Vacancy",
+        "errorMessage": "Error: {{error}}",
+        "successMessage": "Vacancy uploaded successfully!",
+        "vacancyTitleLabel": "Vacancy Title",
+        "vacancyTitlePlaceholder": "Enter the title of the vacancy",
+        "descriptionLabel": "Description",
+        "descriptionPlaceholder": "Describe the vacancy",
+        "requirementsLabel": "Requirements",
+        "requirementsPlaceholder": "List the requirements for this vacancy",
+        "salaryRangeLabel": "Salary Range",
+        "salaryRangePlaceholder": "Enter the salary range (e.g., $50,000 - $70,000)",
+        "locationLabel": "Location",
+        "locationPlaceholder": "Enter the location of the vacancy",
+        "submitButton": "Submit Vacancy",
+        "loadingButton": "Uploading..."
+    },
     "header": {
         "login": "Login",
         "logout": "Logout",

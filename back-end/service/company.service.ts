@@ -11,7 +11,7 @@ const getCompanyById = async (id: number): Promise<Company> => {
     return company;
 };
 
-const getCompanyByUserId = async (userId: number): Promise<Company[]> => {
+const getCompanyByUserId = async (userId: number): Promise<Company> => {
     return companyDB.getCompanyByUserId(userId);
 };
 

@@ -15,11 +15,11 @@ jobRouter.post(
             if (isNaN(userId)) throw new Error('Invalid user ID.');
 
             const company = await companyService.getCompanyByUserId(userId);
-            if (!company.length) throw new Error('Company not found');
+            if (!company) throw new Error('Company not found.');
 
             const jobData = {
                 ...req.body,
-                companyId: company[0].getId(),
+                companyId: company.getId(),
             };
 
             const newJob = await jobService.createJob(jobData);

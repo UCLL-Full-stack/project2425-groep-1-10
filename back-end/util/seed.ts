@@ -7,6 +7,7 @@ const prisma = new PrismaClient();
 
 const main = async () => {
     // Delete all existing companies, users, and profiles to avoid foreign key constraints
+    await prisma.job.deleteMany();
     await prisma.company.deleteMany();
     await prisma.profile.deleteMany();
     await prisma.user.deleteMany();

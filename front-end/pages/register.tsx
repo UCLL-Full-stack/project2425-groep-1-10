@@ -60,22 +60,6 @@ const Register: React.FC = () => {
         }
 
         try {
-            // const registerPayload = {
-            //     email,
-            //     password,
-            //     firstName,
-            //     lastName,
-            //     dob,
-            //     role,
-            //     ...(role === 'company' && {
-            //         companyName,
-            //         companyDescription,
-            //         websiteUrl,
-            //     }),
-            // };
-
-            // await registerUser(registerPayload);
-
             await registerUser(email, password, firstName, lastName, dob, role);
             const loginResponse = await loginUser(email, password);
             localStorage.setItem('loggedInUser', JSON.stringify(loginResponse));

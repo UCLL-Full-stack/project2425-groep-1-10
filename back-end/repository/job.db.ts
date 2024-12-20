@@ -17,8 +17,8 @@ const createJob = async (job: Job): Promise<Job> => {
             title: job.getTitle(),
             description: job.getDescription(),
             requirements: job.getRequirements(),
-            salaryRange: job.getSalaryRange(),
             location: job.getLocation(),
+            salaryRange: job.getSalaryRange(),
             companyId: job.getCompanyId(),
         },
     });
@@ -31,8 +31,8 @@ const updateJob = async (
         title: string;
         description: string;
         requirements: string[];
-        salaryRange: string;
         location: string;
+        salaryRange: string;
     }>
 ): Promise<Job> => {
     const prismaJob = await database.job.update({

@@ -1,24 +1,33 @@
-const API_URL = 'http://localhost:3000/jobs';
+import axios from 'axios';
 
-/**
- * Upload a vacancy to the database.
- * @param vacancyData - An object containing vacancy details.
- * @returns A Promise with the server response.
- */
-export const uploadVacancy = async (vacancyData: FormData): Promise<Response> => {
+const BASE_URL = 'http://localhost:3000';
+
+export const uploadVacancy = async (
+    token: string,
+    title: string,
+    description: string,
+    requirements: string[],
+    location: string,
+    salaryRange?: string
+) => {
     try {
-        const response = await fetch(API_URL, {
-            method: 'POST',
-            body: vacancyData,
-        });
-
-        if (!response.ok) {
-            throw new Error(`Failed to upload vacancy: ${response.statusText}`);
-        }
-
-        return response;
-    } catch (error) {
-        console.error('Error uploading vacancy:', error);
-        throw error;
+        const response = await axios.post(
+            `${BASE_URL}/jobs`,
+            {
+                title,
+                description,
+                requirements,
+                location,
+                salaryRange,
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+        return response.data;
+    } catch (error: any) {
+        throw error.response?.data || new Error(error.message || 'Upload vacancy failed');
     }
 };

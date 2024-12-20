@@ -1,21 +1,19 @@
 import React, { useState } from 'react';
 import Header from '@components/header';
-import { uploadVacancy } from '@services/vacancyUploadService'; // Adjust the path to match your project structure
+import { uploadVacancy } from '@services/vacancyUploadService';
+import { useTranslation } from 'next-i18next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 const VacancyUpload: React.FC = () => {
+    const { t } = useTranslation('common');
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [requirements, setRequirements] = useState('');
-    const [file, setFile] = useState<File | null>(null);
+    const [salaryRange, setSalaryRange] = useState('');
+    const [location, setLocation] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
-
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files.length > 0) {
-            setFile(e.target.files[0]);
-        }
-    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -23,21 +21,29 @@ const VacancyUpload: React.FC = () => {
         setError(null);
         setSuccess(false);
 
-        const formData = new FormData();
-        formData.append('title', title);
-        formData.append('description', description);
-        formData.append('requirements', requirements);
-        if (file) {
-            formData.append('file', file);
-        }
-
         try {
-            await uploadVacancy(formData);
-            setSuccess(true);
-            setTitle('');
-            setDescription('');
-            setRequirements('');
-            setFile(null);
+            const loggedInUser = localStorage.getItem('loggedInUser');
+            if (loggedInUser) {
+                const token = JSON.parse(loggedInUser).token;
+
+                // Split requirements into an array
+                const requirementsArray = requirements.split(', ').map((req) => req.trim());
+
+                await uploadVacancy(
+                    token,
+                    title,
+                    description,
+                    requirementsArray,
+                    location,
+                    salaryRange
+                );
+                setSuccess(true);
+                setTitle('');
+                setDescription('');
+                setRequirements('');
+                setLocation('');
+                setSalaryRange('');
+            }
         } catch (err: any) {
             setError(err.message || 'Something went wrong');
         } finally {
@@ -51,12 +57,16 @@ const VacancyUpload: React.FC = () => {
             <div className="flex flex-col items-center py-10">
                 <div className="w-full max-w-3xl bg-white shadow-lg rounded-lg p-6">
                     <h1 className="text-2xl font-bold text-blue-600 text-center mb-6">
-                        Upload a Vacancy
+                        {t('vacancyUploadPage.uploadVacancyTitle')}
                     </h1>
-                    {error && <div className="text-red-500 text-sm mb-4">Error: {error}</div>}
+                    {error && (
+                        <div className="text-red-500 text-sm mb-4">
+                            {t('vacancyUploadPage.errorMessage', { error })}
+                        </div>
+                    )}
                     {success && (
                         <div className="text-green-500 text-sm mb-4">
-                            Vacancy uploaded successfully!
+                            {t('vacancyUploadPage.successMessage')}
                         </div>
                     )}
                     <form onSubmit={handleSubmit} className="space-y-6">
@@ -65,14 +75,14 @@ const VacancyUpload: React.FC = () => {
                                 htmlFor="title"
                                 className="block text-sm font-medium text-gray-700"
                             >
-                                Vacancy Title
+                                {t('vacancyUploadPage.vacancyTitleLabel')}
                             </label>
                             <input
                                 type="text"
                                 id="title"
                                 value={title}
                                 onChange={(e) => setTitle(e.target.value)}
-                                placeholder="Enter the title of the vacancy"
+                                placeholder={t('vacancyUploadPage.vacancyTitlePlaceholder')}
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                                 required
                             />
@@ -82,13 +92,13 @@ const VacancyUpload: React.FC = () => {
                                 htmlFor="description"
                                 className="block text-sm font-medium text-gray-700"
                             >
-                                Description
+                                {t('vacancyUploadPage.descriptionLabel')}
                             </label>
                             <textarea
                                 id="description"
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
-                                placeholder="Describe the vacancy"
+                                placeholder={t('vacancyUploadPage.descriptionPlaceholder')}
                                 rows={4}
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                                 required
@@ -99,13 +109,13 @@ const VacancyUpload: React.FC = () => {
                                 htmlFor="requirements"
                                 className="block text-sm font-medium text-gray-700"
                             >
-                                Requirements
+                                {t('vacancyUploadPage.requirementsLabel')}
                             </label>
                             <textarea
                                 id="requirements"
                                 value={requirements}
                                 onChange={(e) => setRequirements(e.target.value)}
-                                placeholder="List the requirements for this vacancy"
+                                placeholder={t('vacancyUploadPage.requirementsPlaceholder')}
                                 rows={3}
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                                 required
@@ -113,34 +123,46 @@ const VacancyUpload: React.FC = () => {
                         </div>
                         <div>
                             <label
-                                htmlFor="file"
+                                htmlFor="salaryRange"
                                 className="block text-sm font-medium text-gray-700"
                             >
-                                Upload Supporting Document (Optional)
+                                {t('vacancyUploadPage.salaryRangeLabel')}
                             </label>
                             <input
-                                type="file"
-                                id="file"
-                                onChange={handleFileChange}
-                                className="mt-1 block w-full text-sm text-gray-500
-                                    file:mr-4 file:py-2 file:px-4
-                                    file:rounded-md file:border-0
-                                    file:text-sm file:font-semibold
-                                    file:bg-blue-50 file:text-blue-600
-                                    hover:file:bg-blue-100"
+                                type="text"
+                                id="salaryRange"
+                                value={salaryRange}
+                                onChange={(e) => setSalaryRange(e.target.value)}
+                                placeholder={t('vacancyUploadPage.salaryRangePlaceholder')}
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                required
                             />
-                            {file && (
-                                <p className="text-sm text-gray-600 mt-2">
-                                    Selected File: {file.name}
-                                </p>
-                            )}
+                        </div>
+                        <div>
+                            <label
+                                htmlFor="location"
+                                className="block text-sm font-medium text-gray-700"
+                            >
+                                {t('vacancyUploadPage.locationLabel')}
+                            </label>
+                            <input
+                                type="text"
+                                id="location"
+                                value={location}
+                                onChange={(e) => setLocation(e.target.value)}
+                                placeholder={t('vacancyUploadPage.locationPlaceholder')}
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                required
+                            />
                         </div>
                         <button
                             type="submit"
                             className="w-full bg-blue-500 text-white py-2 px-4 rounded-md font-medium hover:bg-blue-600 transition duration-300"
                             disabled={loading}
                         >
-                            {loading ? 'Uploading...' : 'Submit Vacancy'}
+                            {loading
+                                ? t('vacancyUploadPage.loadingButton')
+                                : t('vacancyUploadPage.submitButton')}
                         </button>
                     </form>
                 </div>
@@ -148,5 +170,13 @@ const VacancyUpload: React.FC = () => {
         </div>
     );
 };
+
+export async function getStaticProps({ locale }: { locale: string }) {
+    return {
+        props: {
+            ...(await serverSideTranslations(locale, ['common'])),
+        },
+    };
+}
 
 export default VacancyUpload;

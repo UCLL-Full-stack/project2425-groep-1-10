@@ -29,8 +29,8 @@ model Job {
   title        String
   description  String
   requirements String[]
-  salaryRange  String?
   location     String
+  salaryRange  String?
   companyId    Int
   company      Company       @relation(fields: [companyId], references: [id])
   applications Application[]

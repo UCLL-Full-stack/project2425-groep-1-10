@@ -18,8 +18,11 @@ const Header: React.FC = () => {
             setLoggedInUser(parsedUser);
             setUserRole(parsedUser.role);
 
-            // Redirect company users to the employer page
-            if (parsedUser.role === 'company' && router.pathname !== '/employer') {
+            // Redirect company users to employer page if they are not already on employer-related pages
+            if (
+                parsedUser.role === 'company' &&
+                !['/employer', '/vacancyUpload'].includes(router.pathname)
+            ) {
                 router.push('/employer');
             }
         } else {
@@ -32,7 +35,7 @@ const Header: React.FC = () => {
         localStorage.removeItem('loggedInUser');
         setLoggedInUser(null);
         setUserRole(null);
-        router.push('/'); // Redirect to home on logout
+        router.push('/');
     };
 
     return (
@@ -48,26 +51,71 @@ const Header: React.FC = () => {
                         className="rounded-full shadow-md mb-4"
                     />
                     <div className="flex space-x-8">
-                        {userRole === 'user' && (
+                        {userRole === 'admin' && (
                             <>
-                                <Link href="/" className="text-white text-xl font-semibold">
+                                <Link
+                                    href="/"
+                                    className="text-white text-xl font-semibold relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-transform after:duration-300 hover:after:w-full"
+                                >
                                     {t('home')}
                                 </Link>
                                 <Link
                                     href="/vacancies"
-                                    className="text-white text-xl font-semibold"
+                                    className="text-white text-xl font-semibold relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-transform after:duration-300 hover:after:w-full"
                                 >
                                     {t('headerVacancies')}
                                 </Link>
-                                <Link href="/progress" className="text-white text-xl font-semibold">
+                                <Link
+                                    href="/progress"
+                                    className="text-white text-xl font-semibold relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-transform after:duration-300 hover:after:w-full"
+                                >
+                                    {t('progress')}
+                                </Link>
+                                <Link
+                                    href="/employer"
+                                    className="text-white text-xl font-semibold relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-transform after:duration-300 hover:after:w-full"
+                                >
+                                    {t('employer')}
+                                </Link>
+                            </>
+                        )}
+                        {userRole === 'user' && (
+                            <>
+                                <Link
+                                    href="/"
+                                    className="text-white text-xl font-semibold relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-transform after:duration-300 hover:after:w-full"
+                                >
+                                    {t('home')}
+                                </Link>
+                                <Link
+                                    href="/vacancies"
+                                    className="text-white text-xl font-semibold relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-transform after:duration-300 hover:after:w-full"
+                                >
+                                    {t('headerVacancies')}
+                                </Link>
+                                <Link
+                                    href="/progress"
+                                    className="text-white text-xl font-semibold relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-transform after:duration-300 hover:after:w-full"
+                                >
                                     {t('progress')}
                                 </Link>
                             </>
                         )}
                         {userRole === 'company' && (
-                            <Link href="/employer" className="text-white text-xl font-semibold">
-                                {t('employer')}
-                            </Link>
+                            <>
+                                <Link
+                                    href="/employer"
+                                    className="text-white text-xl font-semibold relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-transform after:duration-300 hover:after:w-full"
+                                >
+                                    {t('employer')}
+                                </Link>
+                                <Link
+                                    href="/vacancyUpload"
+                                    className="text-white text-xl font-semibold relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-transform after:duration-300 hover:after:w-full"
+                                >
+                                    {t('vacancyUpload')}
+                                </Link>
+                            </>
                         )}
                     </div>
                 </div>
@@ -75,7 +123,7 @@ const Header: React.FC = () => {
                     {!loggedInUser ? (
                         <Link
                             href="/login"
-                            className="px-4 text-xl text-white hover:bg-gray-600 rounded-lg"
+                            className="text-white text-xl font-semibold relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-transform after:duration-300 hover:after:w-full"
                         >
                             {t('header.login')}
                         </Link>
@@ -87,7 +135,7 @@ const Header: React.FC = () => {
                             <a
                                 href="/"
                                 onClick={handleClick}
-                                className="px-4 text-xl text-white hover:bg-gray-600 rounded-lg"
+                                className="text-white text-xl font-semibold relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-transform after:duration-300 hover:after:w-full"
                             >
                                 {t('header.logout')}
                             </a>

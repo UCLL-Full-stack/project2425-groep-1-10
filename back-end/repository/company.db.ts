@@ -11,6 +11,11 @@ const getCompanyById = async (id: number): Promise<Company | null> => {
     return prismaCompany ? Company.from(prismaCompany) : null;
 };
 
+const getCompanyByUserId = async (userId: number): Promise<Company[]> => {
+    const prismaCompanies = await database.company.findMany({ where: { createdBy: userId } });
+    return prismaCompanies.map((company) => Company.from(company));
+};
+
 const createCompany = async (company: Company): Promise<Company> => {
     const prismaCompany = await database.company.create({
         data: {
@@ -41,6 +46,7 @@ const deleteCompany = async (id: number): Promise<void> => {
 export default {
     getAllCompanies,
     getCompanyById,
+    getCompanyByUserId,
     createCompany,
     updateCompany,
     deleteCompany,

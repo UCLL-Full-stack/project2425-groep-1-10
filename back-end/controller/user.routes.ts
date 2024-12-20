@@ -83,7 +83,6 @@ import express, { NextFunction, Request, Response } from 'express';
 import userService from '../service/user.service';
 import { UserInput } from '../types/index';
 import jwtUtil from '../util/jwt';
-import profileService from '../service/profile.service';
 
 const userRouter = express.Router();
 

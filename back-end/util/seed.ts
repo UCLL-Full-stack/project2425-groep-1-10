@@ -6,7 +6,8 @@ import bcrypt from 'bcrypt';
 const prisma = new PrismaClient();
 
 const main = async () => {
-    // Delete all existing users and profiles
+    // Delete all existing companies, users, and profiles to avoid foreign key constraints
+    await prisma.company.deleteMany();
     await prisma.profile.deleteMany();
     await prisma.user.deleteMany();
 
@@ -23,7 +24,7 @@ const main = async () => {
     });
 
     // Create a company user
-    await prisma.user.create({
+    const companyUser = await prisma.user.create({
         data: {
             email: 'company.one@example.com',
             password: await bcrypt.hash('company123', 12),
@@ -31,6 +32,16 @@ const main = async () => {
             lastName: 'One',
             dob: new Date(),
             role: 'company' as Role,
+        },
+    });
+
+    // Create a company for the company user
+    await prisma.company.create({
+        data: {
+            name: 'Company One',
+            description: 'This is the first company.',
+            websiteUrl: 'http://company.one.com',
+            createdBy: companyUser.id,
         },
     });
 

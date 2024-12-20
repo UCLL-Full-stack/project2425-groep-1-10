@@ -4,10 +4,22 @@ import Header from '@components/header';
 import styles from '@styles/home.module.css';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 const Home: React.FC = () => {
     const { t } = useTranslation('common');
+    const router = useRouter();
+
+    const handleGetStartedClick = () => {
+        const loggedInUser = localStorage.getItem('loggedInUser');
+        if (loggedInUser) {
+            // Gebruiker is ingelogd, stuur naar vacatures
+            router.push('/vacancies');
+        } else {
+            // Gebruiker is niet ingelogd, stuur naar login
+            router.push('/login');
+        }
+    };
 
     return (
         <>
@@ -33,8 +45,11 @@ const Home: React.FC = () => {
                     </div>
                     <h1 className="text-blue-600 text-5xl font-bold mb-4">{t('welcome')}</h1>
                     <p className="text-gray-700 text-lg mb-6">{t('descriptionExtended')}</p>
-                    <button className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-300">
-                        <Link href="/vacancies">{t('getStartedButton')}</Link>
+                    <button
+                        className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-300"
+                        onClick={handleGetStartedClick}
+                    >
+                        {t('getStartedButton')}
                     </button>
                 </div>
             </main>

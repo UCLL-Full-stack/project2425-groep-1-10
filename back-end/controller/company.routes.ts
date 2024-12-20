@@ -1,6 +1,7 @@
 import express, { NextFunction, Request, Response } from 'express';
 import jwtUtil from '../util/jwt';
 import companyService from '../service/company.service';
+import { UserInput } from '../types';
 
 const companyRouter = express.Router();
 
@@ -82,48 +83,22 @@ companyRouter.get(
     }
 );
 
-/**
- * @swagger
- * /companies:
- *   post:
- *     security:
- *       - bearerAuth: []
- *     summary: Create a new company
- *     tags:
- *       - Companies
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *                 description: Name of the company.
- *               description:
- *                 type: string
- *                 description: Description of the company.
- *               websiteUrl:
- *                 type: string
- *                 description: Website URL of the company.
- *               createdBy:
- *                 type: number
- *                 description: ID of the user creating the company.
- *     responses:
- *       201:
- *         description: Company created successfully.
- *       400:
- *         description: Invalid request data.
- *       500:
- *         description: Internal server error.
- */
 companyRouter.post(
     '/',
-    jwtUtil.authorizeRoles(['admin']),
-    async (req: Request, res: Response, next: NextFunction) => {
+    jwtUtil.authorizeRoles(['company']),
+    async (req: Request & { auth: UserInput }, res: Response, next: NextFunction) => {
         try {
-            const companyData = req.body;
+            const userId = Number(req.auth.id);
+            if (isNaN(userId)) throw new Error('Invalid user ID.');
+
+            // if (companyService.getCompanyByUserId(userId))
+            //     throw new Error('Company already exists for this user.');
+
+            const companyData = {
+                ...req.body,
+                createdBy: userId,
+            };
+
             const newCompany = await companyService.createCompany(companyData);
             res.status(201).json(newCompany);
         } catch (error) {

@@ -33,3 +33,29 @@ export const registerUser = async (
         throw error.response?.data || new Error(error.message || 'Registration failed');
     }
 };
+
+export const createCompany = async (
+    token: string,
+    name: string,
+    description?: string,
+    websiteUrl?: string
+) => {
+    try {
+        const response = await axios.post(
+            `${BASE_URL}/companies`,
+            {
+                name,
+                description,
+                websiteUrl,
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+        return response.data;
+    } catch (error: any) {
+        throw error.response?.data || new Error(error.message || 'Company creation failed');
+    }
+};

@@ -72,7 +72,10 @@
         "alreadyHaveAccount": "Already have an account?",
         "loginLink": "Login",
         "userTab": "Register as user",
-        "companyTab": "Register as company"
+        "companyTab": "Register as company",
+        "companyNameLabel": "Company Name",
+        "companyDescriptionLabel": "Company Description",
+        "websiteUrlLabel": "Website URL"
     },
     "header": {
         "login": "Login",

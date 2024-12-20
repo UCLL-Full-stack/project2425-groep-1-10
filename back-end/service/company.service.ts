@@ -11,6 +11,10 @@ const getCompanyById = async (id: number): Promise<Company> => {
     return company;
 };
 
+const getCompanyByUserId = async (userId: number): Promise<Company[]> => {
+    return companyDB.getCompanyByUserId(userId);
+};
+
 const createCompany = async ({
     name,
     description,
@@ -46,6 +50,7 @@ const deleteCompany = async (id: number): Promise<void> => {
 export default {
     getAllCompanies,
     getCompanyById,
+    getCompanyByUserId,
     createCompany,
     updateCompany,
     deleteCompany,

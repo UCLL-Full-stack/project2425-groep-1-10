@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { registerUser, loginUser } from '../services/authService';
+import { registerUser, loginUser, createCompany } from '../services/authService';
 import Language from '@components/language/language';
 
 const Register: React.FC = () => {
@@ -18,6 +18,11 @@ const Register: React.FC = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [role, setRole] = useState<'user' | 'company'>('user');
     const [authenticated, setAuthenticated] = useState(false);
+
+    const [companyName, setCompanyName] = useState('');
+    const [companyDescription, setCompanyDescription] = useState('');
+    const [websiteUrl, setWebsiteUrl] = useState('');
+
     const router = useRouter();
 
     useEffect(() => {
@@ -55,13 +60,31 @@ const Register: React.FC = () => {
         }
 
         try {
+            // const registerPayload = {
+            //     email,
+            //     password,
+            //     firstName,
+            //     lastName,
+            //     dob,
+            //     role,
+            //     ...(role === 'company' && {
+            //         companyName,
+            //         companyDescription,
+            //         websiteUrl,
+            //     }),
+            // };
+
+            // await registerUser(registerPayload);
+
             await registerUser(email, password, firstName, lastName, dob, role);
             const loginResponse = await loginUser(email, password);
+            localStorage.setItem('loggedInUser', JSON.stringify(loginResponse));
 
             console.log(`User ${loginResponse.id} registered successfully!`);
             alert('User registered successfully');
 
-            localStorage.setItem('loggedInUser', JSON.stringify(loginResponse));
+            await createCompany(loginResponse.token, companyName, companyDescription, websiteUrl);
+
             router.push('/');
         } catch (error: any) {
             const errorMessage =
@@ -166,6 +189,51 @@ const Register: React.FC = () => {
                                 required
                             />
                         </div>
+
+                        {role === 'company' && (
+                            <>
+                                <div className="mb-4">
+                                    <label htmlFor="companyName" className="block text-gray-700">
+                                        {t('registerPage.companyNameLabel')}
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="companyName"
+                                        className="w-full px-3 py-2 border rounded"
+                                        value={companyName}
+                                        onChange={(e) => setCompanyName(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                                <div className="mb-4">
+                                    <label
+                                        htmlFor="companyDescription"
+                                        className="block text-gray-700"
+                                    >
+                                        {t('registerPage.companyDescriptionLabel')}
+                                    </label>
+                                    <textarea
+                                        id="companyDescription"
+                                        className="w-full px-3 py-2 border rounded"
+                                        value={companyDescription}
+                                        onChange={(e) => setCompanyDescription(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-4">
+                                    <label htmlFor="websiteUrl" className="block text-gray-700">
+                                        {t('registerPage.websiteUrlLabel')}
+                                    </label>
+                                    <input
+                                        type="url"
+                                        id="websiteUrl"
+                                        className="w-full px-3 py-2 border rounded"
+                                        value={websiteUrl}
+                                        onChange={(e) => setWebsiteUrl(e.target.value)}
+                                    />
+                                </div>
+                            </>
+                        )}
+
                         <div className="mb-4">
                             <label htmlFor="password" className="block text-gray-700">
                                 {t('registerPage.passwordLabel')}

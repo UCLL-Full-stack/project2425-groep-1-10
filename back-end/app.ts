@@ -8,6 +8,7 @@ import { expressjwt } from 'express-jwt';
 import { userRouter } from './controller/user.routes';
 import { profileRouter } from './controller/profile.routes';
 import { companyRouter } from './controller/company.routes';
+import { jobRouter } from './controller/job.routes';
 
 const app = express();
 
@@ -47,6 +48,7 @@ app.use(
 app.use('/users', userRouter);
 app.use('/profiles', profileRouter);
 app.use('/companies', companyRouter);
+app.use('/jobs', jobRouter);
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     res.status(500).json({

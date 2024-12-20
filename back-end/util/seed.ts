@@ -7,6 +7,7 @@ const prisma = new PrismaClient();
 
 const main = async () => {
     // Delete all existing companies, users, and profiles to avoid foreign key constraints
+    await prisma.application.deleteMany();
     await prisma.job.deleteMany();
     await prisma.company.deleteMany();
     await prisma.profile.deleteMany();
@@ -94,6 +95,34 @@ const main = async () => {
     } else {
         console.error('User one not found, profile creation skipped.');
     }
+
+    // Create jobs for the company
+    const company = await prisma.company.findFirst({ where: { createdBy: companyUser.id } });
+    const jobs = [
+        {
+            title: 'Software Engineer',
+            description: 'We are looking for a software engineer.',
+            requirements: ['JavaScript', 'TypeScript', 'Node.js'],
+            location: 'Leuven, Belgium',
+            salaryRange: '€40,000 - €60,000',
+            companyId: company.id,
+        },
+    ];
+
+    const createdJobs = [];
+    for (const job of jobs) {
+        const createdJob = await prisma.job.create({ data: job });
+        createdJobs.push(createdJob);
+    }
+
+    // Create applications for the jobs
+    const job = createdJobs[0];
+    await prisma.application.create({
+        data: {
+            userId: user1.id,
+            jobId: job.id,
+        },
+    });
 };
 
 (async () => {

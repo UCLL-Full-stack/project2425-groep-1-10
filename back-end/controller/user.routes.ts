@@ -81,9 +81,9 @@
  */
 import express, { NextFunction, Request, Response } from 'express';
 import userService from '../service/user.service';
-import profileService from '../service/profile.service';
 import { UserInput } from '../types/index';
 import jwtUtil from '../util/jwt';
+import profileService from '../service/profile.service';
 
 const userRouter = express.Router();
 
@@ -111,61 +111,6 @@ userRouter.get(
         try {
             const users = await userService.getAllUsers();
             res.status(200).json(users);
-        } catch (error) {
-            next(error);
-        }
-    }
-);
-
-/**
- * @swagger
- * /users/me/profile:
- *   get:
- *     security:
- *       - bearerAuth: []
- *     summary: Get the profile of the currently authenticated user
- *     tags:
- *       - Users
- *     responses:
- *       200:
- *         description: The profile of the authenticated user
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 id:
- *                   type: number
- *                   description: Profile ID
- *                 bio:
- *                   type: string
- *                   description: User biography
- *                 skills:
- *                   type: array
- *                   items:
- *                     type: string
- *                   description: List of user skills
- *                 resumeUrl:
- *                   type: string
- *                   description: URL to the user resume
- *                 userId:
- *                   type: number
- *                   description: ID of the user associated with the profile
- *       401:
- *         description: Unauthorized. User must provide a valid JWT.
- *       500:
- *         description: Internal server error.
- */
-userRouter.get(
-    '/me/profile',
-    jwtUtil.authorizeRoles(['user', 'admin']),
-    async (req: Request & { auth: UserInput }, res: Response, next: NextFunction) => {
-        try {
-            const userId = Number(req.auth.id);
-            if (isNaN(userId)) throw new Error('Invalid user ID.');
-
-            const userProfile = await profileService.getProfileByUserId({ userId });
-            res.status(200).json(userProfile);
         } catch (error) {
             next(error);
         }

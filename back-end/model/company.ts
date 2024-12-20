@@ -1,22 +1,22 @@
-import { Company as CompanyPrisma, User as UserPrisma, Job as JobPrisma } from '@prisma/client';
-import { User } from './user';
-import { Job } from './job';
+import { Company as CompanyPrisma } from '@prisma/client';
 
 export class Company {
     private id?: number;
     private name: string;
     private description?: string;
     private websiteUrl?: string;
-    private creator: User;
-    private jobs: Job[];
+    private createdBy: number;
+    private createdAt: Date;
+    private updatedAt: Date;
 
     constructor(company: {
         id?: number;
         name: string;
         description?: string;
         websiteUrl?: string;
-        creator: User;
-        jobs: Job[];
+        createdBy: number;
+        createdAt?: Date;
+        updatedAt?: Date;
     }) {
         this.validate(company);
 
@@ -24,8 +24,9 @@ export class Company {
         this.name = company.name;
         this.description = company.description;
         this.websiteUrl = company.websiteUrl;
-        this.creator = company.creator;
-        this.jobs = company.jobs;
+        this.createdBy = company.createdBy;
+        this.createdAt = company.createdAt || new Date();
+        this.updatedAt = company.updatedAt || new Date();
     }
 
     getId(): number | undefined {
@@ -44,57 +45,44 @@ export class Company {
         return this.websiteUrl;
     }
 
-    getCreator(): User {
-        return this.creator;
+    getCreatedBy(): number {
+        return this.createdBy;
     }
 
-    getJobs(): Job[] {
-        return this.jobs;
+    getCreatedAt(): Date {
+        return this.createdAt;
     }
 
-    validate(company: {
-        name: string;
-        description?: string;
-        websiteUrl?: string;
-        creator: User;
-        jobs: Job[];
-    }) {
-        if (typeof company.name !== 'string') throw new Error('Invalid company name');
-        if (company.description && typeof company.description !== 'string')
-            throw new Error('Invalid company description');
-        if (company.websiteUrl && typeof company.websiteUrl !== 'string')
-            throw new Error('Invalid company websiteUrl');
-        if (!(company.creator instanceof User)) throw new Error('Invalid company creator');
-        if (!Array.isArray(company.jobs) || company.jobs.some((job) => !(job instanceof Job)))
-            throw new Error('Invalid company jobs');
+    getUpdatedAt(): Date {
+        return this.updatedAt;
     }
 
-    equals({ id, name, description, websiteUrl, creator, jobs }): boolean {
-        return (
-            this.id === id &&
-            this.name === name &&
-            this.description === description &&
-            this.websiteUrl === websiteUrl &&
-            this.creator.equals(creator) &&
-            this.jobs.every((job, index) => job.equals(jobs[index]))
-        );
+    setName(name: string): void {
+        this.name = name;
     }
 
-    static from({
-        id,
-        name,
-        description,
-        websiteUrl,
-        creator,
-        jobs,
-    }: CompanyPrisma & { creator: UserPrisma; jobs: JobPrisma[] }) {
+    setDescription(description: string): void {
+        this.description = description;
+    }
+
+    setWebsiteUrl(websiteUrl: string): void {
+        this.websiteUrl = websiteUrl;
+    }
+
+    validate(company: { name: string; createdBy: number }): void {
+        if (!company.name?.trim()) throw new Error('Company name is required');
+        if (!company.createdBy) throw new Error('Creator ID is required');
+    }
+
+    static from(prismaCompany: CompanyPrisma): Company {
         return new Company({
-            id,
-            name,
-            description,
-            websiteUrl,
-            creator: User.from(creator),
-            jobs: jobs.map(Job.from),
+            id: prismaCompany.id,
+            name: prismaCompany.name,
+            description: prismaCompany.description || undefined,
+            websiteUrl: prismaCompany.websiteUrl || undefined,
+            createdBy: prismaCompany.createdBy,
+            createdAt: prismaCompany.createdAt,
+            updatedAt: prismaCompany.updatedAt,
         });
     }
 }

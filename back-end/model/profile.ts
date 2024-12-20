@@ -1,19 +1,22 @@
-import { Profile as ProfilePrisma, User as UserPrisma } from '@prisma/client';
-import { User } from './user';
+import { Profile as ProfilePrisma } from '@prisma/client';
 
 export class Profile {
     private id?: number;
     private bio?: string;
     private skills: string[];
     private resumeUrl?: string;
-    private user: User;
+    private userId: number;
+    private createdAt: Date;
+    private updatedAt: Date;
 
     constructor(profile: {
         id?: number;
         bio?: string;
         skills: string[];
         resumeUrl?: string;
-        user: User;
+        userId: number;
+        createdAt?: Date;
+        updatedAt?: Date;
     }) {
         this.validate(profile);
 
@@ -21,7 +24,9 @@ export class Profile {
         this.bio = profile.bio;
         this.skills = profile.skills;
         this.resumeUrl = profile.resumeUrl;
-        this.user = profile.user;
+        this.userId = profile.userId;
+        this.createdAt = profile.createdAt || new Date();
+        this.updatedAt = profile.updatedAt || new Date();
     }
 
     getId(): number | undefined {
@@ -40,39 +45,48 @@ export class Profile {
         return this.resumeUrl;
     }
 
-    getUser(): User {
-        return this.user;
+    getUserId(): number {
+        return this.userId;
     }
 
-    validate(profile: { bio?: string; skills: string[]; resumeUrl?: string; user: User }) {
-        if (profile.bio && typeof profile.bio !== 'string') throw new Error('Invalid profile bio');
-        if (
-            !Array.isArray(profile.skills) ||
-            profile.skills.some((skill) => typeof skill !== 'string')
-        )
-            throw new Error('Invalid profile skills');
-        if (profile.resumeUrl && typeof profile.resumeUrl !== 'string')
-            throw new Error('Invalid profile resumeUrl');
-        if (!(profile.user instanceof User)) throw new Error('Invalid profile user');
+    getCreatedAt(): Date {
+        return this.createdAt;
     }
 
-    equals({ id, bio, skills, resumeUrl, user }): boolean {
-        return (
-            this.id === id &&
-            this.bio === bio &&
-            this.skills === skills &&
-            this.resumeUrl === resumeUrl &&
-            this.user.equals(user)
-        );
+    getUpdatedAt(): Date {
+        return this.updatedAt;
     }
 
-    static from({ id, bio, skills, resumeUrl, user }: ProfilePrisma & { user: UserPrisma }) {
+    setBio(bio: string): void {
+        this.bio = bio;
+    }
+
+    setSkills(skills: string[]): void {
+        this.skills = skills;
+    }
+
+    setResumeUrl(resumeUrl: string): void {
+        this.resumeUrl = resumeUrl;
+    }
+
+    validate(profile: { skills: string[]; userId: number }): void {
+        if (!profile.skills || !Array.isArray(profile.skills) || profile.skills.length === 0) {
+            throw new Error('Skills are required and must be an array.');
+        }
+        if (!profile.userId) {
+            throw new Error('User ID is required.');
+        }
+    }
+
+    static from(prismaProfile: ProfilePrisma): Profile {
         return new Profile({
-            id,
-            bio,
-            skills,
-            resumeUrl,
-            user: User.from(user),
+            id: prismaProfile.id,
+            bio: prismaProfile.bio || undefined,
+            skills: prismaProfile.skills,
+            resumeUrl: prismaProfile.resumeUrl || undefined,
+            userId: prismaProfile.userId,
+            createdAt: prismaProfile.createdAt,
+            updatedAt: prismaProfile.updatedAt,
         });
     }
 }

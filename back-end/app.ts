@@ -6,6 +6,8 @@ import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import { expressjwt } from 'express-jwt';
 import { userRouter } from './controller/user.routes';
+import { profileRouter } from './controller/profile.routes';
+import { companyRouter } from './controller/company.routes';
 
 const app = express();
 
@@ -43,6 +45,8 @@ app.use(
 );
 
 app.use('/users', userRouter);
+app.use('/profiles', profileRouter);
+app.use('/companies', companyRouter);
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     res.status(500).json({

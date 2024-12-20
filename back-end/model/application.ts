@@ -1,75 +1,65 @@
-import {
-    Application as ApplicationPrisma,
-    User as UserPrisma,
-    Job as JobPrisma,
-    Company as CompanyPrisma,
-} from '@prisma/client';
-import { User } from './user';
-import { Job } from './job';
+import { Application as ApplicationPrisma, ApplicationStatus } from '@prisma/client';
 
 export class Application {
     private id?: number;
-    private status: string;
-    private user: User;
-    private job: Job;
+    private status: ApplicationStatus;
+    private userId: number;
+    private jobId: number;
+    private createdAt: Date;
+    private updatedAt: Date;
 
-    constructor(application: { id?: number; status: string; user: User; job: Job }) {
-        this.validate(application);
-
+    constructor(application: {
+        id?: number;
+        status?: ApplicationStatus;
+        userId: number;
+        jobId: number;
+        createdAt?: Date;
+        updatedAt?: Date;
+    }) {
         this.id = application.id;
-        this.status = application.status;
-        this.user = application.user;
-        this.job = application.job;
+        this.status = application.status || ApplicationStatus.pending;
+        this.userId = application.userId;
+        this.jobId = application.jobId;
+        this.createdAt = application.createdAt || new Date();
+        this.updatedAt = application.updatedAt || new Date();
     }
 
     getId(): number | undefined {
         return this.id;
     }
 
-    getStatus(): string {
+    getStatus(): ApplicationStatus {
         return this.status;
     }
 
-    getUser(): User {
-        return this.user;
+    getUserId(): number {
+        return this.userId;
     }
 
-    getJob(): Job {
-        return this.job;
+    getJobId(): number {
+        return this.jobId;
     }
 
-    validate(application: { status: string; user: User; job: Job }) {
-        if (typeof application.status !== 'string') throw new Error('Invalid application status');
-        if (!(application.user instanceof User)) throw new Error('Invalid application user');
-        if (!(application.job instanceof Job)) throw new Error('Invalid application job');
+    getCreatedAt(): Date {
+        return this.createdAt;
     }
 
-    equals({ id, status, user, job }): boolean {
-        return (
-            this.id === id &&
-            this.status === status &&
-            this.user.equals(user) &&
-            this.job.equals(job)
-        );
+    getUpdatedAt(): Date {
+        return this.updatedAt;
     }
 
-    static from({
-        id,
-        status,
-        user,
-        job,
-    }: ApplicationPrisma & {
-        user: UserPrisma;
-        job: JobPrisma & {
-            company: CompanyPrisma & { creator: UserPrisma; jobs: JobPrisma[] };
-            applications: ApplicationPrisma[];
-        };
-    }) {
+    setStatus(status: ApplicationStatus): void {
+        this.status = status;
+    }
+
+    static from(prismaApplication: ApplicationPrisma): Application {
         return new Application({
-            id,
-            status,
-            user: User.from(user),
-            job: Job.from(job),
+            id: prismaApplication.id,
+            status: prismaApplication.status,
+            userId: prismaApplication.userId,
+            jobId: prismaApplication.jobId,
+            createdAt: prismaApplication.createdAt,
+            updatedAt: prismaApplication.updatedAt,
         });
     }
 }

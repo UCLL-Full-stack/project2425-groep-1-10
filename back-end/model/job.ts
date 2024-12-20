@@ -1,11 +1,4 @@
-import {
-    User as UserPrisma,
-    Job as JobPrisma,
-    Company as CompanyPrisma,
-    Application as ApplicationPrisma,
-} from '@prisma/client';
-import { Company } from './company';
-import { Application } from './application';
+import { Job as JobPrisma } from '@prisma/client';
 
 export class Job {
     private id?: number;
@@ -14,8 +7,9 @@ export class Job {
     private requirements: string[];
     private salaryRange?: string;
     private location: string;
-    private company: Company;
-    private applications: Application[];
+    private companyId: number;
+    private createdAt: Date;
+    private updatedAt: Date;
 
     constructor(job: {
         id?: number;
@@ -24,8 +18,9 @@ export class Job {
         requirements: string[];
         salaryRange?: string;
         location: string;
-        company: Company;
-        applications: Application[];
+        companyId: number;
+        createdAt?: Date;
+        updatedAt?: Date;
     }) {
         this.validate(job);
 
@@ -35,8 +30,9 @@ export class Job {
         this.requirements = job.requirements;
         this.salaryRange = job.salaryRange;
         this.location = job.location;
-        this.company = job.company;
-        this.applications = job.applications;
+        this.companyId = job.companyId;
+        this.createdAt = job.createdAt || new Date();
+        this.updatedAt = job.updatedAt || new Date();
     }
 
     getId(): number | undefined {
@@ -63,85 +59,59 @@ export class Job {
         return this.location;
     }
 
-    getCompany(): Company {
-        return this.company;
+    getCompanyId(): number {
+        return this.companyId;
     }
 
-    getApplications(): Application[] {
-        return this.applications;
+    getCreatedAt(): Date {
+        return this.createdAt;
+    }
+
+    getUpdatedAt(): Date {
+        return this.updatedAt;
+    }
+
+    setTitle(title: string): void {
+        this.title = title;
+    }
+
+    setDescription(description: string): void {
+        this.description = description;
+    }
+
+    setRequirements(requirements: string[]): void {
+        this.requirements = requirements;
+    }
+
+    setSalaryRange(salaryRange: string): void {
+        this.salaryRange = salaryRange;
     }
 
     validate(job: {
         title: string;
         description: string;
         requirements: string[];
-        salaryRange?: string;
         location: string;
-        company: Company;
-        applications: Application[];
-    }) {
-        if (typeof job.title !== 'string') throw new Error('Invalid job title');
-        if (typeof job.description !== 'string') throw new Error('Invalid job description');
-        if (
-            !Array.isArray(job.requirements) ||
-            job.requirements.some((req) => typeof req !== 'string')
-        )
-            throw new Error('Invalid job requirements');
-        if (job.salaryRange && typeof job.salaryRange !== 'string')
-            throw new Error('Invalid job salaryRange');
-        if (typeof job.location !== 'string') throw new Error('Invalid job location');
-        if (!(job.company instanceof Company)) throw new Error('Invalid job company');
-        if (
-            !Array.isArray(job.applications) ||
-            job.applications.some((application) => !(application instanceof Application))
-        )
-            throw new Error('Invalid job applications');
+        companyId: number;
+    }): void {
+        if (!job.title?.trim()) throw new Error('Job title is required');
+        if (!job.description?.trim()) throw new Error('Job description is required');
+        if (!job.requirements?.length) throw new Error('Job requirements are required');
+        if (!job.location?.trim()) throw new Error('Job location is required');
+        if (!job.companyId) throw new Error('Company ID is required');
     }
 
-    equals({
-        id,
-        title,
-        description,
-        requirements,
-        salaryRange,
-        location,
-        company,
-        applications,
-    }): boolean {
-        return (
-            this.id === id &&
-            this.title === title &&
-            this.description === description &&
-            this.requirements === requirements &&
-            this.salaryRange === salaryRange &&
-            this.location === location &&
-            this.company.equals(company) &&
-            this.applications.every((application, index) => application.equals(applications[index]))
-        );
-    }
-
-    static from({
-        id,
-        title,
-        description,
-        requirements,
-        salaryRange,
-        location,
-        company,
-        applications,
-    }: JobPrisma & {
-        company: CompanyPrisma & { creator: UserPrisma; jobs: JobPrisma[] };
-        applications: ApplicationPrisma[];
-    }) {
+    static from(prismaJob: JobPrisma): Job {
         return new Job({
-            id,
-            title,
-            description,
-            requirements,
-            salaryRange,
-            location,
-            company: Company.from(company),
-            applications: applications.map(Application.from),
+            id: prismaJob.id,
+            title: prismaJob.title,
+            description: prismaJob.description,
+            requirements: prismaJob.requirements,
+            salaryRange: prismaJob.salaryRange || undefined,
+            location: prismaJob.location,
+            companyId: prismaJob.companyId,
+            createdAt: prismaJob.createdAt,
+            updatedAt: prismaJob.updatedAt,
         });
     }
 }

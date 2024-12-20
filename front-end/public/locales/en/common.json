@@ -7,12 +7,16 @@
     "home": "Home",
     "headerVacancies": "Vacancies",
     "vacancies": {
-        "title": "Vacancies",
-        "metaDescription": "Browse available vacancies",
+        "title": "Job Vacancies",
+        "metaDescription": "Browse and apply for job vacancies tailored to your skills.",
         "heading": "Available Vacancies",
+        "loading": "Loading job vacancies...",
+        "noVacancies": "No job vacancies match your skills at the moment.",
+        "applyNow": "Apply Now",
         "companyLogo": "Company Logo",
-        "item": "Vacancy {{number}}",
-        "applyNow": "Apply Now"
+        "confirmApplication": "Are you sure you want to apply for the position: {{vacancy}}?",
+        "yes": "Yes",
+        "no": "No"
     },
     "progress": "Progress",
     "employer": "Employer",
@@ -105,5 +109,10 @@
         "login": "Login",
         "logout": "Logout",
         "welcome": "Welcome"
+    },
+    "messages": {
+        "applicationConfirmed": "Application confirmed!",
+        "applicationFailed": "Failed to apply for the vacancy.",
+        "errorLoadingVacancies": "An error occurred while loading vacancies."
     }
 }

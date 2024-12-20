@@ -15,6 +15,10 @@ const getJobById = async (id: number): Promise<Job> => {
     return job;
 };
 
+const getJobsThatMatchUserSkills = async (userSkills: string[]): Promise<Job[]> => {
+    return jobDB.getJobsThatMatchUserSkills(userSkills);
+};
+
 const createJob = async ({
     title,
     description,
@@ -63,6 +67,7 @@ export default {
     getAllJobs,
     getJobsByCompanyId,
     getJobById,
+    getJobsThatMatchUserSkills,
     createJob,
     updateJob,
     deleteJob,

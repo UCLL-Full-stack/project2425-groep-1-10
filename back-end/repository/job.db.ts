@@ -16,6 +16,20 @@ const getJobById = async (id: number): Promise<Job | null> => {
     return prismaJob ? Job.from(prismaJob) : null;
 };
 
+const getJobsThatMatchUserSkills = async (userSkills: string[]): Promise<Job[]> => {
+    // Fetch jobs that match at least one of the user's skills
+    const prismaJobs = await database.job.findMany({
+        where: {
+            requirements: {
+                hasSome: userSkills, // Matches any job where requirements contain any of the user's skills
+            },
+        },
+    });
+
+    // Convert the raw database jobs into the application's Job model
+    return prismaJobs.map((job) => Job.from(job));
+};
+
 const createJob = async (job: Job): Promise<Job> => {
     const prismaJob = await database.job.create({
         data: {
@@ -55,6 +69,7 @@ export default {
     getAllJobs,
     getJobsByCompanyId,
     getJobById,
+    getJobsThatMatchUserSkills,
     createJob,
     updateJob,
     deleteJob,

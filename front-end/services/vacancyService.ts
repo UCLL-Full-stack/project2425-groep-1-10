@@ -29,3 +29,16 @@ export const deleteVacancy = async (token: string, vacancyId: string) => {
         throw error.response?.data || new Error(error.message || 'Failed to delete vacancy');
     }
 };
+
+export const fetchVacanciesForUser = async (token: string) => {
+    try {
+        const response = await axios.get(`${BASE_URL}/jobs/user`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data;
+    } catch (error: any) {
+        throw error.response?.data || new Error(error.message || 'Failed to fetch vacancies');
+    }
+};

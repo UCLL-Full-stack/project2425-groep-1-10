@@ -3,6 +3,8 @@ import jwtUtil from '../util/jwt';
 import jobService from '../service/job.service';
 import { UserInput } from '../types';
 import companyService from '../service/company.service';
+import userService from '../service/user.service';
+import profileService from '../service/profile.service';
 
 const jobRouter = express.Router();
 
@@ -17,6 +19,24 @@ jobRouter.get(
             const company = await companyService.getCompanyByUserId(userId);
 
             const userJobs = await jobService.getJobsByCompanyId(company.getId());
+            res.status(200).json(userJobs);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+jobRouter.get(
+    '/user',
+    jwtUtil.authorizeRoles(['user', 'company', 'admin']),
+    async (req: Request & { auth: UserInput }, res: Response, next: NextFunction) => {
+        try {
+            const userId = Number(req.auth.id);
+            if (isNaN(userId)) throw new Error('Invalid user ID.');
+
+            const userSkills = (await profileService.getProfileByUserId(userId)).getSkills();
+
+            const userJobs = await jobService.getJobsThatMatchUserSkills(userSkills);
             res.status(200).json(userJobs);
         } catch (error) {
             next(error);

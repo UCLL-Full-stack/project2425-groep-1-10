@@ -16,9 +16,11 @@ const Login: React.FC = () => {
     const router = useRouter();
 
     const users = [
-        { email: 'admin@example.com', password: 'admin123', role: 'Admin' },
+        { email: 'admin@example.com', password: 'admin123', role: 'admin' },
         { email: 'user.one@example.com', password: 'user123', role: 'user' },
+        { email: 'user.two@example.com', password: 'user123', role: 'user' },
         { email: 'company.one@example.com', password: 'company123', role: 'company' },
+        { email: 'company.two@example.com', password: 'company123', role: 'company' },
     ];
 
     useEffect(() => {
@@ -127,29 +129,41 @@ const Login: React.FC = () => {
                     </p>
                 </div>
                 <div className="mt-6">
-                    <h2 className="text-xl font-bold mb-4 text-center">Gebruikers</h2>
+                    <h2 className="text-xl font-bold mb-4 text-center">
+                        {t('loginPage.usersTable.heading')}
+                    </h2>
                     <table className="w-full border-collapse border border-gray-300">
                         <thead>
                             <tr>
-                                <th className="border border-gray-300 px-4 py-2">Email</th>
-                                <th className="border border-gray-300 px-4 py-2">Wachtwoord</th>
-                                <th className="border border-gray-300 px-4 py-2">Rol</th>
+                                <th className="border border-gray-300 px-4 py-2">
+                                    {t('loginPage.usersTable.email')}
+                                </th>
+                                <th className="border border-gray-300 px-4 py-2">
+                                    {t('loginPage.usersTable.password')}
+                                </th>
+                                <th className="border border-gray-300 px-4 py-2">
+                                    {t('loginPage.usersTable.role')}
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
                             {users.map((user, index) => (
                                 <tr key={index}>
-                                    <td className="border border-gray-300 px-4 py-2">{user.email}</td>
-                                    <td className="border border-gray-300 px-4 py-2">{user.password}</td>
-                                    <td className="border border-gray-300 px-4 py-2">{user.role}</td>
+                                    <td className="border border-gray-300 px-4 py-2">
+                                        {user.email}
+                                    </td>
+                                    <td className="border border-gray-300 px-4 py-2">
+                                        {user.password}
+                                    </td>
+                                    <td className="border border-gray-300 px-4 py-2">
+                                        {t(`loginPage.usersTable.roles.${user.role.toLowerCase()}`)}
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
                 </div>
             </div>
-
-
         </>
     );
 };

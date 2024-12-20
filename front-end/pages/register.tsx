@@ -67,7 +67,16 @@ const Register: React.FC = () => {
             console.log(`User ${loginResponse.id} registered successfully!`);
             alert('User registered successfully');
 
-            await createCompany(loginResponse.token, companyName, companyDescription, websiteUrl);
+            // If the role is "company", create a company
+            if (role === 'company') {
+                await createCompany(
+                    loginResponse.token,
+                    companyName,
+                    companyDescription,
+                    websiteUrl
+                );
+                console.log(`Company "${companyName}" created successfully!`);
+            }
 
             router.push('/');
         } catch (error: any) {

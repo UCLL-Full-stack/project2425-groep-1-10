@@ -52,7 +52,12 @@ jobRouter.get(
             const userId = Number(req.auth.id);
             if (isNaN(userId)) throw new Error('Invalid user ID.');
 
-            const unappliedVacancies = await jobService.getUnappliedVacanciesForUser(userId);
+            const userSkills = (await profileService.getProfileByUserId(userId)).getSkills();
+
+            const unappliedVacancies = await jobService.getUnappliedJobsThatMatchUserSkills(
+                userId,
+                userSkills
+            );
             res.status(200).json(unappliedVacancies);
         } catch (error) {
             next(error);
@@ -119,6 +124,9 @@ jobRouter.delete(
             if (!job || job.getCompanyId() !== company.getId()) {
                 return res.status(403).json({ message: 'Unauthorized to delete this job.' });
             }
+
+            // Delete all applications that belong to this job
+            await jobService.deleteApplicationsByJobId(jobId);
 
             // Delete the job
             await jobService.deleteJob(jobId);

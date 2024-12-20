@@ -23,6 +23,13 @@ const getUnappliedVacanciesForUser = async (userId: number): Promise<Job[]> => {
     return jobDB.getUnappliedVacanciesForUser(userId);
 };
 
+const getUnappliedJobsThatMatchUserSkills = async (
+    userId: number,
+    userSkills: string[]
+): Promise<Job[]> => {
+    return jobDB.getUnappliedJobsThatMatchUserSkills(userId, userSkills);
+};
+
 const createJob = async ({
     title,
     description,
@@ -67,13 +74,19 @@ const deleteJob = async (id: number): Promise<void> => {
     await jobDB.deleteJob(id);
 };
 
+const deleteApplicationsByJobId = async (jobId: number): Promise<void> => {
+    await jobDB.deleteApplicationsByJobId(jobId);
+};
+
 export default {
     getAllJobs,
     getJobsByCompanyId,
     getJobById,
     getJobsThatMatchUserSkills,
     getUnappliedVacanciesForUser,
+    getUnappliedJobsThatMatchUserSkills,
     createJob,
     updateJob,
     deleteJob,
+    deleteApplicationsByJobId,
 };

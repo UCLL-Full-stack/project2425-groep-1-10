@@ -47,7 +47,7 @@ export const updateApplicationStatus = async (
     status: string
 ) => {
     try {
-        const response = await axios.patch(
+        const response = await axios.put(
             `${BASE_URL}/applications/${applicationId}`,
             { status },
             {

@@ -249,8 +249,10 @@ profileRouter.put(
             const userId = Number(req.auth.id);
             if (isNaN(userId)) throw new Error('Invalid user ID.');
 
-            const updatedProfile = await profileService.updateProfile(userId, req.body);
-            res.status(200).json(updatedProfile);
+            let profile = await profileService.getProfileByUserId(userId);
+            profile = await profileService.updateProfile(profile.getId(), req.body);
+
+            res.status(200).json(profile);
         } catch (error) {
             next(error);
         }

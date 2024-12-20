@@ -4,7 +4,7 @@ import Header from '@components/header';
 import Image from 'next/image';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { fetchVacanciesForUser, applyForVacancy } from '@services/vacancyService';
+import { fetchUnappliedVacanciesForUser, applyForVacancy } from '@services/vacancyService';
 
 interface Vacancy {
     id: string;
@@ -35,7 +35,7 @@ const Vacancies: React.FC = () => {
                 const loggedInUser = localStorage.getItem('loggedInUser');
                 if (loggedInUser) {
                     const token = JSON.parse(loggedInUser).token;
-                    const userVacancies: Vacancy[] = await fetchVacanciesForUser(token);
+                    const userVacancies: Vacancy[] = await fetchUnappliedVacanciesForUser(token);
                     setVacancies(userVacancies);
                 }
             } catch (err: any) {
@@ -59,6 +59,11 @@ const Vacancies: React.FC = () => {
             if (loggedInUser) {
                 const token = JSON.parse(loggedInUser).token;
                 await applyForVacancy(token, popupData.vacancyId);
+
+                // Refetch vacancies to ensure database reflects changes
+                const updatedVacancies = await fetchUnappliedVacanciesForUser(token);
+                setVacancies(updatedVacancies);
+
                 setConfirmationMessage('Application confirmed!');
             }
         } catch (err: any) {

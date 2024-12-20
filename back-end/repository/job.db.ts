@@ -30,6 +30,22 @@ const getJobsThatMatchUserSkills = async (userSkills: string[]): Promise<Job[]> 
     return prismaJobs.map((job) => Job.from(job));
 };
 
+const getUnappliedVacanciesForUser = async (userId: number): Promise<Job[]> => {
+    // Fetch jobs that the user has not applied to
+    const prismaJobs = await database.job.findMany({
+        where: {
+            applications: {
+                none: {
+                    userId,
+                },
+            },
+        },
+    });
+
+    // Convert the raw database jobs into the application's Job model
+    return prismaJobs.map((job) => Job.from(job));
+};
+
 const createJob = async (job: Job): Promise<Job> => {
     const prismaJob = await database.job.create({
         data: {
@@ -70,6 +86,7 @@ export default {
     getJobsByCompanyId,
     getJobById,
     getJobsThatMatchUserSkills,
+    getUnappliedVacanciesForUser,
     createJob,
     updateJob,
     deleteJob,

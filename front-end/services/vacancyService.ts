@@ -43,6 +43,19 @@ export const fetchVacanciesForUser = async (token: string) => {
     }
 };
 
+export const fetchUnappliedVacanciesForUser = async (token: string) => {
+    try {
+        const response = await axios.get(`${BASE_URL}/jobs/user/unapplied`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data;
+    } catch (error: any) {
+        throw error.response?.data || new Error(error.message || 'Failed to fetch vacancies');
+    }
+};
+
 export const applyForVacancy = async (token: string, jobId: string) => {
     try {
         const response = await axios.post(

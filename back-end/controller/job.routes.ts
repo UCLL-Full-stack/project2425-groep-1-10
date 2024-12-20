@@ -45,6 +45,22 @@ jobRouter.get(
 );
 
 jobRouter.get(
+    '/user/unapplied',
+    jwtUtil.authorizeRoles(['user']),
+    async (req: Request & { auth: UserInput }, res: Response, next: NextFunction) => {
+        try {
+            const userId = Number(req.auth.id);
+            if (isNaN(userId)) throw new Error('Invalid user ID.');
+
+            const unappliedVacancies = await jobService.getUnappliedVacanciesForUser(userId);
+            res.status(200).json(unappliedVacancies);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+jobRouter.get(
     '/:id',
     jwtUtil.authorizeRoles(['user', 'company', 'admin']),
     async (req: Request, res: Response, next: NextFunction) => {

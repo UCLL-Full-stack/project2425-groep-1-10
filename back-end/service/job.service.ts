@@ -19,6 +19,10 @@ const getJobsThatMatchUserSkills = async (userSkills: string[]): Promise<Job[]> 
     return jobDB.getJobsThatMatchUserSkills(userSkills);
 };
 
+const getUnappliedVacanciesForUser = async (userId: number): Promise<Job[]> => {
+    return jobDB.getUnappliedVacanciesForUser(userId);
+};
+
 const createJob = async ({
     title,
     description,
@@ -68,6 +72,7 @@ export default {
     getJobsByCompanyId,
     getJobById,
     getJobsThatMatchUserSkills,
+    getUnappliedVacanciesForUser,
     createJob,
     updateJob,
     deleteJob,

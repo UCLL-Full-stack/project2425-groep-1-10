@@ -2,57 +2,37 @@ type Role = 'admin' | 'company' | 'user';
 
 type ApplicationStatus = 'pending' | 'accepted' | 'rejected';
 
-type Application = {
-    id: number;
+type ApplicationInput = {
+    id?: number;
     status: ApplicationStatus;
-    userId: number;
+    userId?: number;
     jobId: number;
-    createdAt: Date;
-    updatedAt: Date;
 };
 
-type Job = {
-    id: number;
+type JobInput = {
+    id?: number;
     title: string;
     description: string;
     requirements: string[];
     location: string;
     salaryRange?: string;
-    companyId: number;
-    createdAt: Date;
-    updatedAt: Date;
+    companyId?: number;
 };
 
-type Company = {
-    id: number;
+type CompanyInput = {
+    id?: number;
     name: string;
     description?: string;
     websiteUrl?: string;
-    createdBy: number;
-    createdAt: Date;
-    updatedAt: Date;
+    createdBy?: number;
 };
 
-type Profile = {
-    id: number;
+type ProfileInput = {
+    id?: number;
     bio?: string;
     skills: string[];
     resumeUrl?: string;
-    userId: number;
-    createdAt: Date;
-    updatedAt: Date;
-};
-
-type User = {
-    id: number;
-    email: string;
-    password: string;
-    firstName: string;
-    lastName: string;
-    dob: Date;
-    role: Role;
-    createdAt: Date;
-    updatedAt: Date;
+    userId?: number;
 };
 
 type UserInput = {
@@ -67,10 +47,18 @@ type UserInput = {
 
 type AuthenticationResponse = {
     token: string;
+    email: string;
     fullname: string;
     role: Role;
 };
 
-export { Role, ApplicationStatus, Application, Job, Company, Profile, User, UserInput, AuthenticationResponse };
-
-
+export {
+    Role,
+    ApplicationStatus,
+    ApplicationInput,
+    JobInput,
+    CompanyInput,
+    ProfileInput,
+    UserInput,
+    AuthenticationResponse,
+};

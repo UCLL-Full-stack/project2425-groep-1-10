@@ -14,9 +14,10 @@ import { jobRouter } from './controller/job.routes';
 import { applicationRouter } from './controller/application.routes';
 
 const app = express();
-
 dotenv.config();
 const port = process.env.APP_PORT || 3000;
+
+app.use(helmet.frameguard({ action: 'deny' }));
 
 app.use(helmet.contentSecurityPolicy({
     directives: {
@@ -24,7 +25,8 @@ app.use(helmet.contentSecurityPolicy({
         scriptSrc: ["'self'", "'unsafe-inline'"],
         styleSrc: ["'self'", "'unsafe-inline'"],
         imgSrc: ["'self'", "data:"],
-        connectSrc: ["'self'", "http://localhost:3000"]
+        connectSrc: ["'self'", "http://localhost:3000"],
+        frameAncestors: ["'none'"]
     }
 }));
 

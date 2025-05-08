@@ -1,73 +1,24 @@
-/**
- * @swagger
- * components:
- *   securitySchemes:
- *     bearerAuth:
- *       type: http
- *       scheme: bearer
- *       bearerFormat: JWT
- *   schemas:
- *     Application:
- *       type: object
- *       properties:
- *         id:
- *           type: number
- *           format: int64
- *           description: Application ID.
- *         userId:
- *           type: number
- *           format: int64
- *           description: ID of the user who applied.
- *         jobId:
- *           type: number
- *           format: int64
- *           description: ID of the job applied for.
- *         status:
- *           type: string
- *           enum:
- *             - pending
- *             - accepted
- *             - rejected
- *           description: Status of the application.
- *         createdAt:
- *           type: string
- *           format: date-time
- *           description: When the application was created.
- *         updatedAt:
- *           type: string
- *           format: date-time
- *           description: When the application was last updated.
- *     ApplicationInput:
- *       type: object
- *       properties:
- *         jobId:
- *           type: number
- *           description: ID of the job to apply for.
- *     ApplicationStatusUpdate:
- *       type: object
- *       properties:
- *         status:
- *           type: string
- *           enum:
- *             - pending
- *             - accepted
- *             - rejected
- *           description: New status for the application.
- *     ErrorResponse:
- *       type: object
- *       properties:
- *         error:
- *           type: string
- *           description: Error message.
- */
-
 import express, { NextFunction, Request, Response } from 'express';
 import jwtUtil from '../util/jwt';
 import companyService from '../service/company.service';
 import { UserInput } from '../types';
 import applicationService from '../service/application.service';
+import { z } from 'zod';
 
 const applicationRouter = express.Router();
+
+const applySchema = z.object({
+    jobId: z.number().int().positive(),
+});
+
+const updateStatusSchema = z.object({
+    status: z.enum(['pending', 'accepted', 'rejected']),
+});
+
+function validateId(id: any): number | null {
+    const parsed = Number(id);
+    return Number.isInteger(parsed) && parsed > 0 ? parsed : null;
+}
 
 /**
  * @swagger
@@ -147,8 +98,8 @@ applicationRouter.get(
     jwtUtil.authorizeRoles(['admin']),
     async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const jobId = Number(req.params.jobId);
-            if (isNaN(jobId)) throw new Error('Invalid job ID.');
+            const jobId = validateId(req.params.jobId);
+            if (!jobId) return res.status(400).json({ error: 'Invalid job ID.' });
 
             const applications = await applicationService.getApplicationsByJobId(jobId);
             if (!applications) {
@@ -194,10 +145,10 @@ applicationRouter.get(
             if (isNaN(userId)) throw new Error('Invalid company ID.');
 
             const company = await companyService.getCompanyByUserId(userId);
-
             const companyApplications = await applicationService.getApplicationsByCompanyId(
                 company.getId()
             );
+
             res.status(200).json(companyApplications);
         } catch (error) {
             next(error);
@@ -240,11 +191,12 @@ applicationRouter.post(
             const userId = Number(req.auth.id);
             if (isNaN(userId)) throw new Error('Invalid user ID.');
 
-            const { jobId } = req.body;
+            const parsed = applySchema.safeParse(req.body);
+            if (!parsed.success) return res.status(400).json(parsed.error);
 
             const newApplication = await applicationService.createApplication({
                 userId,
-                jobId,
+                jobId: parsed.data.jobId,
             });
 
             res.status(201).json(newApplication);
@@ -296,12 +248,15 @@ applicationRouter.put(
             const companyId = Number(req.auth.id);
             if (isNaN(companyId)) throw new Error('Invalid company ID.');
 
-            const { id } = req.params;
-            const { status } = req.body;
+            const applicationId = validateId(req.params.id);
+            if (!applicationId) return res.status(400).json({ error: 'Invalid application ID.' });
+
+            const parsed = updateStatusSchema.safeParse(req.body);
+            if (!parsed.success) return res.status(400).json(parsed.error);
 
             const updatedApplication = await applicationService.updateApplicationStatus(
-                Number(id),
-                status
+                applicationId,
+                parsed.data.status
             );
 
             res.status(200).json(updatedApplication);

@@ -1,3 +1,11 @@
+import express, { NextFunction, Request, Response } from 'express';
+import { z } from 'zod';
+import jwtUtil from '../util/jwt';
+import jobService from '../service/job.service';
+import { UserInput } from '../types';
+import companyService from '../service/company.service';
+import profileService from '../service/profile.service';
+
 /**
  * @swagger
  * components:
@@ -13,50 +21,46 @@
  *         id:
  *           type: number
  *           format: int64
- *           description: Job ID.
  *         title:
  *           type: string
- *           description: Title of the job.
  *         description:
  *           type: string
- *           description: Description of the job.
  *         companyId:
  *           type: number
  *           format: int64
- *           description: ID of the company posting the job.
  *         createdAt:
  *           type: string
  *           format: date-time
- *           description: When the job was created.
  *         updatedAt:
  *           type: string
  *           format: date-time
- *           description: When the job was last updated.
  *     JobInput:
  *       type: object
  *       properties:
  *         title:
  *           type: string
- *           description: Title of the job.
  *         description:
  *           type: string
- *           description: Description of the job.
  *     ErrorResponse:
  *       type: object
  *       properties:
  *         error:
  *           type: string
- *           description: Error message.
  */
 
-import express, { NextFunction, Request, Response } from 'express';
-import jwtUtil from '../util/jwt';
-import jobService from '../service/job.service';
-import { UserInput } from '../types';
-import companyService from '../service/company.service';
-import profileService from '../service/profile.service';
-
 const jobRouter = express.Router();
+
+const jobInputSchema = z.object({
+    title: z.string().min(1),
+    description: z.string().min(1),
+    requirements: z.array(z.string()).optional(), // Add requirements as an optional array of strings
+    location: z.string().optional() // Add location as an optional string
+});
+
+function validateId(id: any): number | null {
+    const parsed = Number(id);
+    return Number.isInteger(parsed) && parsed > 0 ? parsed : null;
+}
 
 /**
  * @swagger
@@ -76,10 +80,6 @@ const jobRouter = express.Router();
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Job'
- *       401:
- *         description: Unauthorized.
- *       500:
- *         description: Internal server error.
  */
 jobRouter.get(
     '/',
@@ -116,12 +116,6 @@ jobRouter.get(
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Job'
- *       401:
- *         description: Unauthorized.
- *       403:
- *         description: Forbidden.
- *       500:
- *         description: Internal server error.
  */
 jobRouter.get(
     '/all',
@@ -154,10 +148,6 @@ jobRouter.get(
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Job'
- *       401:
- *         description: Unauthorized.
- *       500:
- *         description: Internal server error.
  */
 jobRouter.get(
     '/user',
@@ -194,10 +184,6 @@ jobRouter.get(
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Job'
- *       401:
- *         description: Unauthorized.
- *       500:
- *         description: Internal server error.
  */
 jobRouter.get(
     '/user/unapplied',
@@ -234,7 +220,6 @@ jobRouter.get(
  *         required: true
  *         schema:
  *           type: number
- *         description: Job ID
  *     responses:
  *       200:
  *         description: Job details.
@@ -242,18 +227,14 @@ jobRouter.get(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Job'
- *       404:
- *         description: Job not found.
- *       500:
- *         description: Internal server error.
  */
 jobRouter.get(
     '/:id',
     jwtUtil.authorizeRoles(['user', 'company', 'admin']),
     async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const jobId = Number(req.params.id);
-            if (isNaN(jobId)) throw new Error('Invalid job ID.');
+            const jobId = validateId(req.params.id);
+            if (!jobId) return res.status(400).json({ error: 'Invalid job ID' });
 
             const job = await jobService.getJobById(jobId);
             res.status(200).json(job);
@@ -285,10 +266,6 @@ jobRouter.get(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Job'
- *       400:
- *         description: Invalid request data.
- *       500:
- *         description: Internal server error.
  */
 jobRouter.post(
     '/',
@@ -298,12 +275,18 @@ jobRouter.post(
             const userId = Number(req.auth.id);
             if (isNaN(userId)) throw new Error('Invalid user ID.');
 
+            const parsed = jobInputSchema.safeParse(req.body);
+            if (!parsed.success) return res.status(400).json(parsed.error);
+
             const company = await companyService.getCompanyByUserId(userId);
             if (!company) throw new Error('Company not found.');
 
             const jobData = {
-                ...req.body,
+                title: parsed.data.title || 'Untitled', // Ensure title is always present
+                description: parsed.data.description || 'No description provided', // Ensure description is always present
                 companyId: company.getId(),
+                requirements: parsed.data.requirements || [], // Add default or parsed requirements
+                location: parsed.data.location || 'Unknown', // Add default or parsed location
             };
 
             const newJob = await jobService.createJob(jobData);
@@ -329,22 +312,17 @@ jobRouter.post(
  *         required: true
  *         schema:
  *           type: number
- *         description: Job ID
  *     responses:
  *       204:
  *         description: Job deleted successfully.
- *       403:
- *         description: Unauthorized to delete this job.
- *       500:
- *         description: Internal server error.
  */
 jobRouter.delete(
     '/:id',
     jwtUtil.authorizeRoles(['company', 'admin']),
     async (req: Request & { auth: UserInput }, res: Response, next: NextFunction) => {
         try {
-            const jobId = Number(req.params.id);
-            if (isNaN(jobId)) throw new Error('Invalid job ID.');
+            const jobId = validateId(req.params.id);
+            if (!jobId) return res.status(400).json({ error: 'Invalid job ID' });
 
             const userId = Number(req.auth.id);
             if (isNaN(userId)) throw new Error('Invalid user ID.');
@@ -355,13 +333,11 @@ jobRouter.delete(
             }
 
             if (req.auth.role === 'admin') {
-                // Admin can delete any job
                 await jobService.deleteApplicationsByJobId(jobId);
                 await jobService.deleteJob(jobId);
                 return res.status(204).send();
             }
 
-            // For company users, ensure the job belongs to their company
             const company = await companyService.getCompanyByUserId(userId);
             if (!company || job.getCompanyId() !== company.getId()) {
                 return res.status(403).json({ message: 'Unauthorized to delete this job.' });

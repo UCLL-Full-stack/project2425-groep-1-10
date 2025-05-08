@@ -1,5 +1,13 @@
 import { Company } from '../model/company';
 import companyDB from '../repository/company.db';
+import { z } from 'zod';
+
+const companyInputSchema = z.object({
+    name: z.string().min(1),
+    description: z.string().optional(),
+    websiteUrl: z.string().url().optional(),
+    createdBy: z.number().int().positive()
+});
 
 const getAllCompanies = async (): Promise<Company[]> => {
     return companyDB.getAllCompanies();
@@ -15,24 +23,12 @@ const getCompanyByUserId = async (userId: number): Promise<Company> => {
     return companyDB.getCompanyByUserId(userId);
 };
 
-const createCompany = async ({
-    name,
-    description,
-    websiteUrl,
-    createdBy,
-}: {
-    name: string;
-    description?: string;
-    websiteUrl?: string;
-    createdBy: number;
-}): Promise<Company> => {
-    const newCompany = new Company({
-        name,
-        description,
-        websiteUrl,
-        createdBy,
-    });
+const createCompany = async (input: any): Promise<Company> => {
+    const parsed = companyInputSchema.safeParse(input);
+    if (!parsed.success) throw new Error(parsed.error.message);
 
+    const { name, description, websiteUrl, createdBy } = parsed.data;
+    const newCompany = new Company({ name, description, websiteUrl, createdBy });
     return companyDB.createCompany(newCompany);
 };
 

@@ -1,105 +1,24 @@
-/**
- * @swagger
- * components:
- *   securitySchemes:
- *     bearerAuth:
- *       type: http
- *       scheme: bearer
- *       bearerFormat: JWT
- *   schemas:
- *     AuthenticationResponse:
- *       type: object
- *       properties:
- *         message:
- *           type: string
- *           description: Authentication response message.
- *         token:
- *           type: string
- *           description: JWT access token.
- *         fullname:
- *           type: string
- *           description: Full name of the user.
- *         role:
- *           type: string
- *           description: Role of the user.
- *     AuthenticationRequest:
- *       type: object
- *       properties:
- *         email:
- *           type: string
- *           description: User email.
- *         password:
- *           type: string
- *           description: User password.
- *     User:
- *       type: object
- *       properties:
- *         id:
- *           type: number
- *           format: int64
- *         email:
- *           type: string
- *           description: E-mail of the user.
- *         password:
- *           type: string
- *           description: User password.
- *         firstName:
- *           type: string
- *           description: First name.
- *         lastName:
- *           type: string
- *           description: Last name.
- *         dob:
- *           type: string
- *           format: date
- *           description: Date of birth.
- *         role:
- *           type: string
- *           enum:
- *             - admin
- *             - company
- *             - user
- *           description: Role of the user.
- *     UserInput:
- *       type: object
- *       properties:
- *         email:
- *           type: string
- *           description: E-mail of the user.
- *         password:
- *           type: string
- *           description: User password.
- *         firstName:
- *           type: string
- *           description: First name.
- *         lastName:
- *           type: string
- *           description: Last name.
- *         dob:
- *           type: string
- *           format: date
- *           description: Date of birth.
- *         role:
- *           type: string
- *           enum:
- *             - admin
- *             - company
- *             - user
- *           description: Role of the user.
- *     ErrorResponse:
- *       type: object
- *       properties:
- *         error:
- *           type: string
- *           description: Error message.
- */
-
 import express, { NextFunction, Request, Response } from 'express';
+import { z } from 'zod';
 import userService from '../service/user.service';
 import { UserInput } from '../types/index';
 import jwtUtil from '../util/jwt';
 
 const userRouter = express.Router();
+
+const signupSchema = z.object({
+    email: z.string().email(),
+    password: z.string().min(8),
+    firstName: z.string().min(1),
+    lastName: z.string().min(1),
+    dob: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    role: z.enum(['admin', 'company', 'user']),
+});
+
+const loginSchema = z.object({
+    email: z.string().email(),
+    password: z.string().min(8),
+});
 
 /**
  * @swagger
@@ -181,9 +100,11 @@ userRouter.get(
     async (req: Request & { auth: UserInput }, res: Response, next: NextFunction) => {
         try {
             const { email } = req.params;
+            if (!z.string().email().safeParse(email).success) {
+                return res.status(400).json({ error: 'Invalid email format' });
+            }
 
             const user = await userService.getUserByEmail({ email });
-
             if (!user) {
                 return res.status(404).json({ error: 'User not found' });
             }
@@ -230,17 +151,17 @@ userRouter.get(
  */
 userRouter.post('/signup', async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { email, password, firstName, lastName, dob, role } = req.body;
+        const parsed = signupSchema.safeParse(req.body);
+        if (!parsed.success) return res.status(400).json(parsed.error);
 
-        const newUser = await userService.createUser({
-            email,
-            password,
-            firstName,
-            lastName,
-            dob,
-            role,
+        const newUser = await userService.createUser(parsed.data as {
+            email: string;
+            password: string;
+            firstName: string;
+            lastName: string;
+            dob: string;
+            role: 'admin' | 'company' | 'user';
         });
-
         res.status(201).json(newUser);
     } catch (error) {
         next(error);
@@ -282,11 +203,27 @@ userRouter.post('/signup', async (req: Request, res: Response, next: NextFunctio
  */
 userRouter.post('/login', async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { email, password } = req.body;
-        const result = await userService.authenticate({ email, password });
-        res.status(200).json(result);
-    } catch (error) {
-        res.status(401).json({ error: error.message });
+        const parsed = loginSchema.safeParse(req.body);
+        if (!parsed.success) return res.status(400).json(parsed.error);
+
+        const result = await userService.authenticate(parsed.data as { email: string; password: string });
+        const token = result.token;
+
+        // Set JWT as HttpOnly cookie
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 3600000, // 1 hour
+        });
+
+        res.status(200).json({
+            message: 'Login successful',
+            role: result.user.role,
+            token,
+        });
+    } catch (error: any) {
+        res.status(401).json({ error: error.message || 'Login failed' });
     }
 });
 

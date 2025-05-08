@@ -1,5 +1,15 @@
 import { Job } from '../model/job';
 import jobDB from '../repository/job.db';
+import { z } from 'zod';
+
+const jobInputSchema = z.object({
+    title: z.string().min(1),
+    description: z.string().min(1),
+    requirements: z.array(z.string().min(1)),
+    location: z.string().min(1),
+    salaryRange: z.string().optional(),
+    companyId: z.number().int().positive()
+});
 
 const getAllJobs = async (): Promise<Job[]> => {
     return jobDB.getAllJobs();
@@ -30,30 +40,12 @@ const getUnappliedJobsThatMatchUserSkills = async (
     return jobDB.getUnappliedJobsThatMatchUserSkills(userId, userSkills);
 };
 
-const createJob = async ({
-    title,
-    description,
-    requirements,
-    location,
-    salaryRange,
-    companyId,
-}: {
-    title: string;
-    description: string;
-    requirements: string[];
-    location: string;
-    salaryRange?: string;
-    companyId: number;
-}): Promise<Job> => {
-    const newJob = new Job({
-        title,
-        description,
-        salaryRange,
-        requirements,
-        location,
-        companyId,
-    });
+const createJob = async (input: any): Promise<Job> => {
+    const parsed = jobInputSchema.safeParse(input);
+    if (!parsed.success) throw new Error(parsed.error.message);
 
+    const { title, description, requirements, location, salaryRange, companyId } = parsed.data;
+    const newJob = new Job({ title, description, requirements, location, salaryRange, companyId });
     return jobDB.createJob(newJob);
 };
 

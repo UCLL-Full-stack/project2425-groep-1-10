@@ -8,6 +8,11 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { registerUser, loginUser, createCompany } from '../services/authService';
 import Language from '@components/language/language';
 
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+const [error, setError] = useState<string>('');
+
+
 const Register: React.FC = () => {
     const { t } = useTranslation('common');
     const [email, setEmail] = useState('');
@@ -54,8 +59,20 @@ const Register: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        if (!emailRegex.test(email)) {
+            setError(t('registerPage.invalidEmail'));
+            return;
+        }
+        if (!passwordRegex.test(password)) {
+            setError(t('registerPage.weakPassword'));
+            return;
+        }
+        if (!Date.parse(dob)) {
+            setError(t('registerPage.invalidDob'));
+            return;
+        }
         if (password !== confirmPassword) {
-            alert(t('registerPage.passwordMismatch'));
+            setError(t('registerPage.passwordMismatch'));
             return;
         }
 
@@ -64,10 +81,6 @@ const Register: React.FC = () => {
             const loginResponse = await loginUser(email, password);
             localStorage.setItem('loggedInUser', JSON.stringify(loginResponse));
 
-            console.log(`User ${loginResponse.id} registered successfully!`);
-            alert('User registered successfully');
-
-            // If the role is "company", create a company
             if (role === 'company') {
                 await createCompany(
                     loginResponse.token,
@@ -75,18 +88,16 @@ const Register: React.FC = () => {
                     companyDescription,
                     websiteUrl
                 );
-                console.log(`Company "${companyName}" created successfully!`);
             }
 
-            // Redirect to the edit profile page
             router.push('/editProfile');
         } catch (error: any) {
             const errorMessage =
                 error.response?.data?.message || error.message || t('registerPage.failed');
-            console.error(errorMessage);
-            alert(errorMessage);
+            setError(errorMessage);
         }
     };
+
 
     if (!authenticated) {
         return null;
@@ -110,21 +121,19 @@ const Register: React.FC = () => {
                     </h1>
                     <div className="flex justify-center mb-6">
                         <button
-                            className={`px-4 py-2 rounded-l ${
-                                role === 'user'
-                                    ? 'bg-blue-500 text-white'
-                                    : 'bg-gray-200 text-gray-700'
-                            }`}
+                            className={`px-4 py-2 rounded-l ${role === 'user'
+                                ? 'bg-blue-500 text-white'
+                                : 'bg-gray-200 text-gray-700'
+                                }`}
                             onClick={() => setRole('user')}
                         >
                             {t('registerPage.userTab')}
                         </button>
                         <button
-                            className={`px-4 py-2 rounded-r ${
-                                role === 'company'
-                                    ? 'bg-blue-500 text-white'
-                                    : 'bg-gray-200 text-gray-700'
-                            }`}
+                            className={`px-4 py-2 rounded-r ${role === 'company'
+                                ? 'bg-blue-500 text-white'
+                                : 'bg-gray-200 text-gray-700'
+                                }`}
                             onClick={() => setRole('company')}
                         >
                             {t('registerPage.companyTab')}
@@ -261,6 +270,8 @@ const Register: React.FC = () => {
                             {t('registerPage.buttonText')}
                         </button>
                     </form>
+                    {error && <div className="text-red-500 text-sm mt-2">{error}</div>}
+
                     <p className="mt-4 text-center">
                         {t('registerPage.alreadyHaveAccount')}{' '}
                         <Link href="/login" className="text-blue-500">

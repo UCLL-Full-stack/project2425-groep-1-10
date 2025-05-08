@@ -1,74 +1,21 @@
-/**
- * @swagger
- * components:
- *   securitySchemes:
- *     bearerAuth:
- *       type: http
- *       scheme: bearer
- *       bearerFormat: JWT
- *   schemas:
- *     Profile:
- *       type: object
- *       properties:
- *         id:
- *           type: number
- *           format: int64
- *           description: Profile ID.
- *         bio:
- *           type: string
- *           description: Biography of the user.
- *         skills:
- *           type: array
- *           items:
- *             type: string
- *           description: Skills of the user.
- *         resumeUrl:
- *           type: string
- *           description: URL to the user's resume.
- *         userId:
- *           type: number
- *           format: int64
- *           description: ID of the user associated with the profile.
- *         createdAt:
- *           type: string
- *           format: date-time
- *           description: When the profile was created.
- *         updatedAt:
- *           type: string
- *           format: date-time
- *           description: When the profile was last updated.
- *     ProfileInput:
- *       type: object
- *       properties:
- *         bio:
- *           type: string
- *           description: Biography of the user.
- *         skills:
- *           type: array
- *           items:
- *             type: string
- *           description: Skills of the user.
- *         resumeUrl:
- *           type: string
- *           description: URL to the user's resume.
- *         userId:
- *           type: number
- *           format: int64
- *           description: ID of the user associated with the profile.
- *     ErrorResponse:
- *       type: object
- *       properties:
- *         error:
- *           type: string
- *           description: Error message.
- */
-
 import express, { NextFunction, Request, Response } from 'express';
+import { z } from 'zod';
 import jwtUtil from '../util/jwt';
 import profileService from '../service/profile.service';
 import { UserInput } from '../types';
 
 const profileRouter = express.Router();
+
+const profileInputSchema = z.object({
+    bio: z.string().min(1),
+    skills: z.array(z.string().min(1)),
+    resumeUrl: z.string().url(),
+});
+
+function validateId(id: any): number | null {
+    const parsed = Number(id);
+    return Number.isInteger(parsed) && parsed > 0 ? parsed : null;
+}
 
 /**
  * @swagger
@@ -132,25 +79,18 @@ profileRouter.get(
  *               $ref: '#/components/schemas/Profile'
  *       404:
  *         description: Profile not found.
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
  *       500:
  *         description: Internal server error.
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
  */
 profileRouter.get(
     '/:id',
     jwtUtil.authorizeRoles(['admin']),
     async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const profileId = Number(req.params.id);
-            const profile = await profileService.getProfileById(profileId);
+            const profileId = validateId(req.params.id);
+            if (!profileId) return res.status(400).json({ error: 'Invalid profile ID' });
 
+            const profile = await profileService.getProfileById(profileId);
             if (!profile) {
                 return res.status(404).json({ error: 'Profile not found' });
             }
@@ -186,16 +126,8 @@ profileRouter.get(
  *               $ref: '#/components/schemas/Profile'
  *       400:
  *         description: Invalid request data.
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
  *       500:
  *         description: Internal server error.
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
  */
 profileRouter.post(
     '/',
@@ -205,7 +137,10 @@ profileRouter.post(
             const userId = Number(req.auth.id);
             if (isNaN(userId)) throw new Error('Invalid user ID.');
 
-            const profileData = { ...req.body, userId };
+            const parsed = profileInputSchema.safeParse(req.body);
+            if (!parsed.success) return res.status(400).json(parsed.error);
+
+            const profileData = { ...parsed.data, userId, skills: parsed.data.skills || [] };
             const newProfile = await profileService.createProfile(profileData);
             res.status(201).json(newProfile);
         } catch (error) {
@@ -249,8 +184,11 @@ profileRouter.put(
             const userId = Number(req.auth.id);
             if (isNaN(userId)) throw new Error('Invalid user ID.');
 
+            const parsed = profileInputSchema.safeParse(req.body);
+            if (!parsed.success) return res.status(400).json(parsed.error);
+
             let profile = await profileService.getProfileByUserId(userId);
-            profile = await profileService.updateProfile(profile.getId(), req.body);
+            profile = await profileService.updateProfile(profile.getId(), parsed.data);
 
             res.status(200).json(profile);
         } catch (error) {
@@ -280,10 +218,6 @@ profileRouter.put(
  *         description: Profile deleted successfully.
  *       404:
  *         description: Profile not found.
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
  *       500:
  *         description: Internal server error.
  */
@@ -292,7 +226,9 @@ profileRouter.delete(
     jwtUtil.authorizeRoles(['admin']),
     async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const profileId = Number(req.params.id);
+            const profileId = validateId(req.params.id);
+            if (!profileId) return res.status(400).json({ error: 'Invalid profile ID' });
+
             await profileService.deleteProfile(profileId);
             res.status(204).send();
         } catch (error) {

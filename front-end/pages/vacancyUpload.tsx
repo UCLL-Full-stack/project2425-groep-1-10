@@ -21,12 +21,35 @@ const VacancyUpload: React.FC = () => {
         setError(null);
         setSuccess(false);
 
+        if (!title || title.length > 100) {
+            setError(t('vacancyUploadPage.invalidTitle'));
+            setLoading(false);
+            return;
+        }
+
+        if (!description || description.length < 10) {
+            setError(t('vacancyUploadPage.invalidDescription'));
+            setLoading(false);
+            return;
+        }
+
+        if (requirements.split(',').some((req) => req.length > 100)) {
+            setError(t('vacancyUploadPage.invalidRequirements'));
+            setLoading(false);
+            return;
+        }
+
+        if (!location || location.length > 100) {
+            setError(t('vacancyUploadPage.invalidLocation'));
+            setLoading(false);
+            return;
+        }
+
         try {
             const loggedInUser = localStorage.getItem('loggedInUser');
             if (loggedInUser) {
                 const token = JSON.parse(loggedInUser).token;
 
-                // Split requirements into an array
                 const requirementsArray = requirements.split(', ').map((req) => req.trim());
 
                 await uploadVacancy(
@@ -71,10 +94,7 @@ const VacancyUpload: React.FC = () => {
                     )}
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div>
-                            <label
-                                htmlFor="title"
-                                className="block text-sm font-medium text-gray-700"
-                            >
+                            <label htmlFor="title" className="block text-sm font-medium text-gray-700">
                                 {t('vacancyUploadPage.vacancyTitleLabel')}
                             </label>
                             <input
@@ -88,10 +108,7 @@ const VacancyUpload: React.FC = () => {
                             />
                         </div>
                         <div>
-                            <label
-                                htmlFor="description"
-                                className="block text-sm font-medium text-gray-700"
-                            >
+                            <label htmlFor="description" className="block text-sm font-medium text-gray-700">
                                 {t('vacancyUploadPage.descriptionLabel')}
                             </label>
                             <textarea
@@ -105,10 +122,7 @@ const VacancyUpload: React.FC = () => {
                             />
                         </div>
                         <div>
-                            <label
-                                htmlFor="requirements"
-                                className="block text-sm font-medium text-gray-700"
-                            >
+                            <label htmlFor="requirements" className="block text-sm font-medium text-gray-700">
                                 {t('vacancyUploadPage.requirementsLabel')}
                             </label>
                             <textarea
@@ -122,10 +136,7 @@ const VacancyUpload: React.FC = () => {
                             />
                         </div>
                         <div>
-                            <label
-                                htmlFor="salaryRange"
-                                className="block text-sm font-medium text-gray-700"
-                            >
+                            <label htmlFor="salaryRange" className="block text-sm font-medium text-gray-700">
                                 {t('vacancyUploadPage.salaryRangeLabel')}
                             </label>
                             <input
@@ -139,10 +150,7 @@ const VacancyUpload: React.FC = () => {
                             />
                         </div>
                         <div>
-                            <label
-                                htmlFor="location"
-                                className="block text-sm font-medium text-gray-700"
-                            >
+                            <label htmlFor="location" className="block text-sm font-medium text-gray-700">
                                 {t('vacancyUploadPage.locationLabel')}
                             </label>
                             <input

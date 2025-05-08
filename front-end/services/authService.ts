@@ -1,13 +1,17 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
 export const loginUser = async (email: string, password: string) => {
     try {
-        const response = await axios.post(`${BASE_URL}/users/login`, { email, password });
+        const response = await axios.post(
+            `${BASE_URL}/users/login`,
+            { email, password },
+            { withCredentials: true }
+        );
         return response.data;
     } catch (error: any) {
-        throw error.response?.data || new Error(error.message || 'Login failed');
+        throw new Error('Login failed. Please try again.');
     }
 };
 
@@ -20,17 +24,14 @@ export const registerUser = async (
     role: string
 ) => {
     try {
-        const response = await axios.post(`${BASE_URL}/users/signup`, {
-            email,
-            password,
-            firstName,
-            lastName,
-            dob,
-            role,
-        });
+        const response = await axios.post(
+            `${BASE_URL}/users/signup`,
+            { email, password, firstName, lastName, dob, role },
+            { withCredentials: true }
+        );
         return response.data;
     } catch (error: any) {
-        throw error.response?.data || new Error(error.message || 'Registration failed');
+        throw new Error('Registration failed. Please try again.');
     }
 };
 
@@ -43,19 +44,16 @@ export const createCompany = async (
     try {
         const response = await axios.post(
             `${BASE_URL}/companies`,
-            {
-                name,
-                description,
-                websiteUrl,
-            },
+            { name, description, websiteUrl },
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
+                withCredentials: true,
             }
         );
         return response.data;
     } catch (error: any) {
-        throw error.response?.data || new Error(error.message || 'Company creation failed');
+        throw new Error('Company creation failed.');
     }
 };

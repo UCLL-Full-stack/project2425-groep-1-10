@@ -90,7 +90,9 @@ const authenticate = async ({
 }: {
     email: string;
     password: string;
-}): Promise<{ token: string; id: number; email: string; fullname: string; role: string }> => {
+}): Promise<{
+    user: any; token: string; id: number; email: string; fullname: string; role: string
+}> => {
     const user = await userDB.getUserByEmail({ email });
 
     if (!user) throw new Error('Invalid email or password');
@@ -105,6 +107,7 @@ const authenticate = async ({
         user.getRole()
     );
     return {
+        user,
         token,
         id: user.getId(),
         email: user.getEmail(),

@@ -2,73 +2,46 @@ import axios from 'axios';
 
 const BASE_URL = 'http://localhost:3000';
 
-// Fetch vacancies created by the logged-in employer
 export const fetchVacancies = async (token: string) => {
-    try {
-        const response = await axios.get(`${BASE_URL}/jobs`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        return response.data;
-    } catch (error: any) {
-        throw error.response?.data || new Error(error.message || 'Failed to fetch vacancies');
-    }
+    const response = await axios.get(`${BASE_URL}/jobs`, {
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
+    });
+    return response.data;
 };
 
-// Delete a vacancy by ID
 export const deleteVacancy = async (token: string, vacancyId: string) => {
-    try {
-        const response = await axios.delete(`${BASE_URL}/jobs/${vacancyId}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        return response.data;
-    } catch (error: any) {
-        throw error.response?.data || new Error(error.message || 'Failed to delete vacancy');
-    }
+    const response = await axios.delete(`${BASE_URL}/jobs/${vacancyId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
+    });
+    return response.data;
 };
 
 export const fetchVacanciesForUser = async (token: string) => {
-    try {
-        const response = await axios.get(`${BASE_URL}/jobs/user`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        return response.data;
-    } catch (error: any) {
-        throw error.response?.data || new Error(error.message || 'Failed to fetch vacancies');
-    }
+    const response = await axios.get(`${BASE_URL}/jobs/user`, {
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
+    });
+    return response.data;
 };
 
 export const fetchUnappliedVacanciesForUser = async (token: string) => {
-    try {
-        const response = await axios.get(`${BASE_URL}/jobs/user/unapplied`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        return response.data;
-    } catch (error: any) {
-        throw error.response?.data || new Error(error.message || 'Failed to fetch vacancies');
-    }
+    const response = await axios.get(`${BASE_URL}/jobs/user/unapplied`, {
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
+    });
+    return response.data;
 };
 
 export const applyForVacancy = async (token: string, jobId: string) => {
-    try {
-        const response = await axios.post(
-            `${BASE_URL}/applications/apply`,
-            { jobId },
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            }
-        );
-        return response.data;
-    } catch (error: any) {
-        throw error.response?.data || new Error(error.message || 'Failed to apply for the vacancy');
-    }
+    const response = await axios.post(
+        `${BASE_URL}/applications/apply`,
+        { jobId },
+        {
+            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
+        }
+    );
+    return response.data;
 };

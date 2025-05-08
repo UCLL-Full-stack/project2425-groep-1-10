@@ -13,7 +13,10 @@ const EditProfile: React.FC = () => {
     const [skills, setSkills] = useState('');
     const [resumeUrl, setResumeUrl] = useState('');
     const [authenticated, setAuthenticated] = useState(false);
+    const [error, setError] = useState<string>('');
     const router = useRouter();
+
+    const urlRegex = /^(https?|ftp):\/\/[^"]+$/;
 
     useEffect(() => {
         const checkAuthentication = async () => {
@@ -30,14 +33,12 @@ const EditProfile: React.FC = () => {
                         return;
                     }
 
-                    // Redirect if the role is not "user"
                     if (decodedToken.role !== 'user') {
                         console.warn('Unauthorized access to edit profile page.');
                         router.push('/');
                         return;
                     }
 
-                    // Fetch or create the user's profile
                     try {
                         const profile = await fetchProfile(token);
                         setBio(profile.bio || '');
@@ -68,6 +69,16 @@ const EditProfile: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        if (skills.split(',').some(skill => skill.trim().length === 0)) {
+            setError(t('editProfilePage.invalidSkills'));
+            return;
+        }
+
+        if (resumeUrl && !urlRegex.test(resumeUrl)) {
+            setError(t('editProfilePage.invalidResumeUrl'));
+            return;
+        }
+
         try {
             const loggedInUser = localStorage.getItem('loggedInUser');
             if (loggedInUser) {
@@ -78,14 +89,13 @@ const EditProfile: React.FC = () => {
                     resumeUrl,
                 });
 
-                alert(t('editProfilePage.successMessage'));
                 router.push('/');
             }
         } catch (error: any) {
             const errorMessage =
                 error.response?.data?.message || error.message || t('editProfilePage.failed');
             console.error(errorMessage);
-            alert(errorMessage);
+            setError(errorMessage);
         }
     };
 
@@ -110,6 +120,7 @@ const EditProfile: React.FC = () => {
                         {t('editProfilePage.heading')}
                     </h1>
                     <form onSubmit={handleSubmit}>
+                        {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
                         <div className="mb-4">
                             <label htmlFor="bio" className="block text-gray-700">
                                 {t('editProfilePage.bioLabel')}

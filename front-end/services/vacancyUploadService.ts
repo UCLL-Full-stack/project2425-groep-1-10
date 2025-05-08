@@ -10,24 +10,13 @@ export const uploadVacancy = async (
     location: string,
     salaryRange?: string
 ) => {
-    try {
-        const response = await axios.post(
-            `${BASE_URL}/jobs`,
-            {
-                title,
-                description,
-                requirements,
-                location,
-                salaryRange,
-            },
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            }
-        );
-        return response.data;
-    } catch (error: any) {
-        throw error.response?.data || new Error(error.message || 'Upload vacancy failed');
-    }
+    const response = await axios.post(
+        `${BASE_URL}/jobs`,
+        { title, description, requirements, location, salaryRange },
+        {
+            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
+        }
+    );
+    return response.data;
 };

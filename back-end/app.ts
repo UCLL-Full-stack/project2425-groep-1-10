@@ -1,7 +1,9 @@
 import * as dotenv from 'dotenv';
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 import * as bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import { expressjwt } from 'express-jwt';
@@ -16,8 +18,23 @@ const app = express();
 dotenv.config();
 const port = process.env.APP_PORT || 3000;
 
-app.use(cors({ origin: 'http://localhost:8080' }));
+app.use(helmet.contentSecurityPolicy({
+    directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", "data:"],
+        connectSrc: ["'self'", "http://localhost:3000"]
+    }
+}));
+
+app.use(cors({
+    origin: 'http://localhost:8080',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true
+}));
 app.use(bodyParser.json());
+app.use(cookieParser());
 
 const swaggerOpts = {
     definition: {
@@ -41,6 +58,12 @@ app.use(
         secret: process.env.JWT_SECRET || 'default_secret',
         algorithms: ['HS256'],
         requestProperty: 'auth',
+        getToken: (req) => {
+            if (req.cookies?.token) return req.cookies.token;
+            if (req.headers.authorization?.startsWith('Bearer '))
+                return req.headers.authorization.split(' ')[1];
+            return null;
+        },
     }).unless({
         path: ['/api-docs', '/users/login', '/users/signup', '/status'],
     })
@@ -59,6 +82,6 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     });
 });
 
-app.listen(port || 3000, () => {
+app.listen(port, () => {
     console.log(`Back-end is running on port ${port}.`);
 });

@@ -1,3 +1,4 @@
+// ... bestaande imports
 import * as dotenv from 'dotenv';
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
@@ -17,8 +18,14 @@ const app = express();
 dotenv.config();
 const port = process.env.APP_PORT || 3000;
 
-app.use(helmet.frameguard({ action: 'deny' }));
+// Logging middleware
+app.use((req: Request, res: Response, next: NextFunction) => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] ${req.method} ${req.url}`);
+    next();
+});
 
+app.use(helmet.frameguard({ action: 'deny' }));
 app.use(helmet.contentSecurityPolicy({
     directives: {
         defaultSrc: ["'self'"],
